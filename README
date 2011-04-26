@@ -1,0 +1,7 @@
+Just like any other TD except that your towers are built from runes, each gives stats and effects. Get the balance right and you're good to go.
+
+Dependancies:
+    Python 2.6.1
+    PyGame
+
+This is my 2nd PyGame project and I wanted to have something where I could have a "Game engine" that handled all the user-input side of things and another part of the program handle the actual rules. This'd allow me to reuse some of the first part of the code in later games.
