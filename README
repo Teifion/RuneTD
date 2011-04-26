@@ -5,3 +5,11 @@ Dependancies:
     PyGame
 
 This is my 2nd PyGame project and I wanted to have something where I could have a "Game engine" that handled all the user-input side of things and another part of the program handle the actual rules. This'd allow me to reuse some of the first part of the code in later games.
+
+The features I want the engine to have are:
+    Handle keyboard and mouse input
+    Display game objects based on the game logic rather than having to display everything
+    Scrolling the view
+
+The features I'd like to have but may leave out of this version of the engine:
+    In game menus
