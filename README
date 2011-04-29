@@ -9,7 +9,7 @@ This is my 2nd PyGame project and I wanted to have something where I could have 
 The features I want the engine to have are:
     Handle keyboard and mouse input
     Display game objects based on the game logic rather than having to display everything
-    Scrolling the view
+    Using the pygame sprites
 
 The features I'd like to have but may leave out of this version of the engine:
     In game menus
