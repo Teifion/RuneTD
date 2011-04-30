@@ -1,4 +1,5 @@
 import pygame
+import random
 
 class Enemy (pygame.sprite.Sprite):
     def __init__(self, color, initial_position):
@@ -10,14 +11,37 @@ class Enemy (pygame.sprite.Sprite):
         
         self.next_update_time = 0 # update() hasn't been called yet.
         
-        self.velocity = [0,0]
+        self.velocity = [0, 0]
         
-        self.has_changed = False
+        self.yeild = random.random()/3
+        self.acceleration = 1
 
     def update(self, current_time):
         # Update every 10 milliseconds = 1/100th of a second.
         if self.next_update_time < current_time:
-            self.rect.top += self.velocity[0]
-            self.rect.left += self.velocity[1]
+            self.rect.left += self.velocity[0]
+            self.rect.top += self.velocity[1]
             
             self.next_update_time = current_time + 10
+    
+    def accelerate(self, target):
+        x, y = self.rect.topleft
+        tx, ty = target
+        
+        # X
+        if random.random() > self.yeild:
+            if x < tx:
+                self.velocity[0] += self.acceleration
+            else:
+                self.velocity[0] -= self.acceleration
+        
+        # Y
+        if random.random() > self.yeild:
+            if y < ty:
+                self.velocity[1] += self.acceleration
+            else:
+                self.velocity[1] -= self.acceleration
+        
+        
+        self.velocity[0] = min(max(self.velocity[0], -8), 8)
+        self.velocity[1] = min(max(self.velocity[1], -8), 8)

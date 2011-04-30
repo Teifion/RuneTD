@@ -2,7 +2,7 @@ import pygame
 from engine import engine
 from game import classes
 
-class Rune_game (engine.Engine_v2):
+class RuneGame (engine.EngineV2):
     name = "Rune TD"
     
     fps = 40
@@ -10,11 +10,23 @@ class Rune_game (engine.Engine_v2):
     windowheight = 768
     
     def __init__(self):
-        super(Rune_game, self).__init__()
+        super(RuneGame, self).__init__()
         
         self.resources = {
             "bg_image": pygame.image.load('media/full_bg.png')
         }
+        
+        self.sprites.add(classes.Enemy((255, 255, 255), [10,10]))
+        self.sprites.add(classes.Enemy((0, 255, 255), [10,10]))
+        self.sprites.add(classes.Enemy((255, 0, 255), [10,10]))
+        self.sprites.add(classes.Enemy((255, 255, 0), [10,10]))
+        self.sprites.add(classes.Enemy((0, 0, 255), [10,10]))
+        self.sprites.add(classes.Enemy((255, 0, 0), [10,10]))
+        self.sprites.add(classes.Enemy((0, 255, 0), [10,10]))
+        
+        e = classes.Enemy((255, 255, 255), [10,10])
+        e.yeild = 0
+        self.sprites.add(e)
     
     def startup(self):
         """docstring for startup"""
@@ -22,19 +34,10 @@ class Rune_game (engine.Engine_v2):
         # self.enemies = pygame.sprite.Group()
         # self.enemies.add(classes.Enemy())
         
-        super(Rune_game, self).startup()
+        super(RuneGame, self).startup()
     
-    def get_background(self, x1, y1, x2, y2):
-        """
-        Return a picture of what to display as the background of the game. It also includes the X, Y offset
-        """
-        
-        return "media/full_bg.png", 0, 0
-    
-    def get_entities(self, x1, y1, x2, y2):
-        """
-        Return a list of all entities if the user's screen is viewing the
-        area enclosed by the coordinates given.
-        """
-        
-        return [self.enemies]
+    def game_logic(self):
+        for s in self.sprites:
+            s.accelerate(self.mouse)
+            
+            
