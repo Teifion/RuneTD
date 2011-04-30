@@ -1,4 +1,7 @@
+import json
+
 import pygame
+
 from engine import engine
 from game import classes
 
@@ -16,17 +19,21 @@ class RuneGame (engine.EngineV2):
             "bg_image": pygame.image.load('media/full_bg.png')
         }
         
-        self.sprites.add(classes.Enemy((255, 255, 255), [10,10]))
-        self.sprites.add(classes.Enemy((0, 255, 255), [10,10]))
-        self.sprites.add(classes.Enemy((255, 0, 255), [10,10]))
-        self.sprites.add(classes.Enemy((255, 255, 0), [10,10]))
-        self.sprites.add(classes.Enemy((0, 0, 255), [10,10]))
-        self.sprites.add(classes.Enemy((255, 0, 0), [10,10]))
-        self.sprites.add(classes.Enemy((0, 255, 0), [10,10]))
+        # Was used for testing some sprite stuff
+        # self.sprites.add(classes.Enemy((255, 255, 255), [10,10]))
+        # self.sprites.add(classes.Enemy((0, 255, 255), [10,10]))
+        # self.sprites.add(classes.Enemy((255, 0, 255), [10,10]))
+        # self.sprites.add(classes.Enemy((255, 255, 0), [10,10]))
+        # self.sprites.add(classes.Enemy((0, 0, 255), [10,10]))
+        # self.sprites.add(classes.Enemy((255, 0, 0), [10,10]))
+        # self.sprites.add(classes.Enemy((0, 255, 0), [10,10]))
+        # 
+        # e = classes.Enemy((255, 255, 255), [10,10])
+        # e.yeild = 0
+        # self.sprites.add(e)
         
-        e = classes.Enemy((255, 255, 255), [10,10])
-        e.yeild = 0
-        self.sprites.add(e)
+        # Testing the ability to load levels
+        self.load_level(5)
     
     def startup(self):
         """docstring for startup"""
@@ -39,5 +46,20 @@ class RuneGame (engine.EngineV2):
     def game_logic(self):
         for s in self.sprites:
             s.accelerate(self.mouse)
-            
-            
+    
+    def load_level(self, level):
+        level = str(level)
+        
+        with open('game/levels.json') as f:
+            try:
+                json_data = json.load(f)
+                level_data = json_data[level]
+            except KeyError as e:
+                print("Level '{0}' not found, level list: {1}".format(
+                    level, list(json_data.keys())
+                ))
+                raise
+            except Exception as e:
+                raise
+        
+        self.quit()
