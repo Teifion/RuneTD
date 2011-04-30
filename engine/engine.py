@@ -2,7 +2,10 @@
 Making heavy use of: http://www.sacredchao.net/~piman/writing/sprite-tutorial.shtml
 """
 
-import pygame, random, sys, time, math
+import sys
+import time
+
+import pygame
 from pygame.locals import *
 
 class EngineV2 (object):
@@ -11,15 +14,17 @@ class EngineV2 (object):
         self.keys_down = {}
         self.mouse = [0,0]
         
+        self.mouse_is_down = False
+        
         self.sprites = pygame.sprite.RenderUpdates()
     
     def game_logic(self):
         """
-        This is called every execution loop to allow the game 
+        This is called every execution loop to allow the game to do 'stuff'
         """
         raise Exception("{0}.game_logic() is not implimented".format(self.__class__))
     
-    def quit():
+    def quit(self):
         pygame.quit()
         sys.exit()
     
@@ -31,7 +36,7 @@ class EngineV2 (object):
     #           if event.type == KEYDOWN:
     #               if event.key == K_ESCAPE: # pressing escape quits
     #                   quit()
-    #               return
+    #               return]
     
     def startup(self):
         pygame.init()
@@ -59,31 +64,26 @@ class EngineV2 (object):
         pygame.time.delay(10)
         self.sprites.clear(self.screen, self.resources["bg_image"])
     
+    # Event handlers
+    def handle_active(self):
+        pass
+    
     def handle_keydown(self, event):
         self.keys_down[event.key] = time.time()
         self.test_for_keyboard_commands()
-
+    
     def handle_keyup(self, event):
         del(self.keys_down[event.key])
-
+    
     def handle_mousedown(self, event):
-        pass
-
+        self.mouse_is_down = True
+    
     def handle_mouseup(self, event):
-        x, y = event.pos
-        tx = int(math.floor(x/TILE_SIZE))
-        ty = int(math.floor(y/TILE_SIZE))
-        
-        try:
-            self.game.player_move(tx, ty)
-        except reversi.Illegal_move as e:
-            print("Illegal move")
-        except Exception as e:
-            raise
-
+        self.mouse_is_down = False
+    
     def handle_mousemotion(self, event):
         self.mouse = event.pos
-
+    
     def test_for_keyboard_commands(self):
         # Cmd + Q
         if 113 in self.keys_down and 310 in self.keys_down:
@@ -91,39 +91,35 @@ class EngineV2 (object):
                 quit()
         
         # Cmd + N
-        if 106 in self.keys_down and 310 in self.keys_down:
-            if self.keys_down[310] <= self.keys_down[106]:# Cmd has to be pushed first
-                self.new_game()
-    
-    def new_game(self):
-        self.game.__init__()
+        # if 106 in self.keys_down and 310 in self.keys_down:
+        #     if self.keys_down[310] <= self.keys_down[106]:# Cmd has to be pushed first
+        #         self.new_game()
     
     def start(self):
         self.startup()
         
+        # Dictionary lookup is faster than an if-statement
+        # We're going to iterate over this loop so much it's well worth it
+        func_dict = {
+            ACTIVEEVENT:        self.handle_active,
+            KEYDOWN:            self.handle_keydown,
+            KEYUP:              self.handle_keyup,
+            MOUSEBUTTONUP:      self.handle_mouseup,
+            MOUSEBUTTONDOWN:    self.handle_mousedown,
+            MOUSEMOTION:        self.handle_mousemotion,
+        }
+        
         while True:
             for event in pygame.event.get():
-                if event.type == KEYDOWN:
-                    self.handle_keydown(event)
-                
-                elif event.type == KEYUP:
-                    self.handle_keyup(event)
-                
-                elif event.type == MOUSEBUTTONUP:
-                    self.handle_mouseup(event)
-                
-                elif event.type == MOUSEBUTTONDOWN:
-                    self.handle_mousedown(event)
-                
-                elif event.type == MOUSEMOTION:
-                    self.handle_mousemotion(event)
-                
+                if event.type in func_dict:
+                    func_dict[event.type](event)
                 else:
-                    print(event)
+                    # print("Unhanded event {0}".format(event))
+                    pass
             
             self.game_logic()
             self.update_window()
             self.clock.tick(self.fps)
         
-        quit()
+        self.quit()
 
