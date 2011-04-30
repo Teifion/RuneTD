@@ -1,12 +1,23 @@
+"""
+Making heavy use of: http://www.sacredchao.net/~piman/writing/sprite-tutorial.shtml
+"""
+
 import pygame, random, sys, time, math
 from pygame.locals import *
 
-class Engine_v2 (object):
+class EngineV2 (object):
     def __init__(self):
-        super(Engine_v2, self).__init__()
+        super(EngineV2, self).__init__()
         self.keys_down = {}
+        self.mouse = [0,0]
         
-        self.sprite_groups = []
+        self.sprites = pygame.sprite.RenderUpdates()
+    
+    def game_logic(self):
+        """
+        This is called every execution loop to allow the game 
+        """
+        raise Exception("{0}.game_logic() is not implimented".format(self.__class__))
     
     def quit():
         pygame.quit()
@@ -26,10 +37,7 @@ class Engine_v2 (object):
         pygame.init()
         self.clock = pygame.time.Clock()
         
-        self.scroll_x = 0
-        self.scroll_y = 0
-        
-        self.surface = pygame.display.set_mode((self.windowwidth, self.windowheight))
+        self.screen = pygame.display.set_mode((self.windowwidth, self.windowheight))
         pygame.display.set_caption(self.name)
         
         self.draw_window()
@@ -41,37 +49,15 @@ class Engine_v2 (object):
         surface.blit(textobj, textrect)
     
     def draw_window(self):
-        # First the board
-        background = pygame.Rect(0, 0, self.windowwidth, self.windowheight)
-        
-        bg_image, offset_x, offset_y = self.get_background(
-            x1 = self.scroll_x, y1 = self.scroll_y,
-            x2 = self.windowwidth, y2 = self.windowheight
-        )
-        
-        self.surface.blit(self.resources["bg_image"], background)
-        
-        # Now the tiles
-        # for x in range(0, 8):
-        #     for y in range(0, 8):
-        #         player = self.game.board[x][y]
-        #         counter = pygame.Rect(x * TILE_SIZE + COUNTER_PADDING, y * TILE_SIZE + COUNTER_PADDING, COUNTER_SIZE, COUNTER_SIZE)
-        #         
-        #         if player == 1:
-        #             self.surface.blit(self.resources['white'], counter)
-        #         elif player == 2:
-        #             self.surface.blit(self.resources['black'], counter)
-        
-        # Has a victory occurred?
-        # font = pygame.font.SysFont("Helvetica", 48)
-        # if self.game.victory == -1:
-        #     self.drawText("Stalemate", font, self.surface, 95, 10)
-        # if self.game.victory == 1:
-        #     self.drawText("Victory to White", font, self.surface, 38, 10)
-        # if self.game.victory == 2:
-        #     self.drawText("Victory to Black", font, self.surface, 39, 10)
-        
+        self.screen.blit(self.resources["bg_image"], [0, 0])
         pygame.display.update()
+    
+    def update_window(self):
+        self.sprites.update(pygame.time.get_ticks())
+        rectlist = self.sprites.draw(self.screen)
+        pygame.display.update(rectlist)
+        pygame.time.delay(10)
+        self.sprites.clear(self.screen, self.resources["bg_image"])
     
     def handle_keydown(self, event):
         self.keys_down[event.key] = time.time()
@@ -95,8 +81,8 @@ class Engine_v2 (object):
         except Exception as e:
             raise
 
-    def handle_mousemove(self, event):
-        pass
+    def handle_mousemotion(self, event):
+        self.mouse = event.pos
 
     def test_for_keyboard_commands(self):
         # Cmd + Q
@@ -130,11 +116,13 @@ class Engine_v2 (object):
                     self.handle_mousedown(event)
                 
                 elif event.type == MOUSEMOTION:
-                    self.handle_mousemove(event)
+                    self.handle_mousemotion(event)
                 
                 else:
                     print(event)
             
+            self.game_logic()
+            self.update_window()
             self.clock.tick(self.fps)
         
         quit()
