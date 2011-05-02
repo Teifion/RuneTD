@@ -45,7 +45,8 @@ class EngineV2 (object):
         self.screen = pygame.display.set_mode((self.windowwidth, self.windowheight))
         pygame.display.set_caption(self.name)
         
-        self.draw_window()
+        # Default background
+        self.background = self.resources['bg_image']
     
     def draw_text(self, text, font, surface, x, y):
         textobj = font.render(text, 1, (0,0,0))
@@ -53,16 +54,12 @@ class EngineV2 (object):
         textrect.topleft = (x, y)
         surface.blit(textobj, textrect)
     
-    def draw_window(self):
-        self.screen.blit(self.resources["bg_image"], [0, 0])
-        pygame.display.update()
-    
     def update_window(self):
         self.sprites.update(pygame.time.get_ticks())
         rectlist = self.sprites.draw(self.screen)
         pygame.display.update(rectlist)
         pygame.time.delay(10)
-        self.sprites.clear(self.screen, self.resources["bg_image"])
+        self.sprites.clear(self.screen, self.background)
     
     # Event handlers
     def handle_active(self, event):
