@@ -65,7 +65,7 @@ class EngineV2 (object):
         self.sprites.clear(self.screen, self.resources["bg_image"])
     
     # Event handlers
-    def handle_active(self):
+    def handle_active(self, event):
         pass
     
     def handle_keydown(self, event):
