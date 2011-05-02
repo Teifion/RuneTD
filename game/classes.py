@@ -45,3 +45,26 @@ class Enemy (pygame.sprite.Sprite):
         
         self.velocity[0] = min(max(self.velocity[0], -8), 8)
         self.velocity[1] = min(max(self.velocity[1], -8), 8)
+
+
+class Wall (pygame.sprite.Sprite):
+    def __init__(self, image, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([35, 35])
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = position
+    
+    def update(self, current_time):
+        pass
+
+class Walkway (pygame.sprite.Sprite):
+    def __init__(self, image, position):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([35, 35])
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.topleft = position
+    
+    def update(self, current_time):
+        pass
