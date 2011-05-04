@@ -59,7 +59,13 @@ class EngineV2 (object):
         rectlist = self.sprites.draw(self.screen)
         pygame.display.update(rectlist)
         pygame.time.delay(10)
+        
+        # This method doesn't refresh correctly
         self.sprites.clear(self.screen, self.background)
+        
+        # This one does
+        # self.sprites.clear(self.screen, self.resources['bg_image'])
+
     
     # Event handlers
     def handle_active(self, event):
