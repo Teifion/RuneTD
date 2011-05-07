@@ -72,24 +72,58 @@ class EngineV2 (object):
 
     
     # Event handlers
+    # Internal version allows us to sub-class without requiring a super call
+    # makes the subclass cleaner
+    def _handle_active(self, event):
+        self.handle_active(event)
+    
     def handle_active(self, event):
         pass
     
-    def handle_keydown(self, event):
+    def _handle_keydown(self, event):
         self.keys_down[event.key] = time.time()
         self.test_for_keyboard_commands()
+        self.handle_keydown(event)
+    
+    def handle_keydown(self, event):
+        pass
+    
+    def _handle_keyup(self, event):
+        del(self.keys_down[event.key])
+        self.handle_keyup(event)
     
     def handle_keyup(self, event):
-        del(self.keys_down[event.key])
+        pass
+    
+    def _handle_mousedown(self, event):
+        self.mouse_is_down = True
+        self.handle_mousedown(event)
     
     def handle_mousedown(self, event):
-        self.mouse_is_down = True
+        pass
+    
+    def _handle_mouseup(self, event):
+        self.mouse_is_down = False
+        self.handle_mouseup(event)
     
     def handle_mouseup(self, event):
-        self.mouse_is_down = False
+        pass
     
-    def handle_mousemotion(self, event):
+    def _handle_mousemotion(self, event):
         self.mouse = event.pos
+        self.handle_mousemotion(event)
+        
+        if self.mouse_is_down:
+            self._handle_mousedrag(event)
+        
+    def handle_mousemotion(self, event):
+        pass
+    
+    def _handle_mousedrag(self, event):
+        self.handle_mousedrag(event)
+    
+    def handle_mousedrag(self, event):
+        pass
     
     def test_for_keyboard_commands(self):
         # Cmd + Q
@@ -108,12 +142,12 @@ class EngineV2 (object):
         # Dictionary lookup is faster than an if-statement
         # We're going to iterate over this loop so much it's well worth it
         func_dict = {
-            ACTIVEEVENT:        self.handle_active,
-            KEYDOWN:            self.handle_keydown,
-            KEYUP:              self.handle_keyup,
-            MOUSEBUTTONUP:      self.handle_mouseup,
-            MOUSEBUTTONDOWN:    self.handle_mousedown,
-            MOUSEMOTION:        self.handle_mousemotion,
+            ACTIVEEVENT:        self._handle_active,
+            KEYDOWN:            self._handle_keydown,
+            KEYUP:              self._handle_keyup,
+            MOUSEBUTTONUP:      self._handle_mouseup,
+            MOUSEBUTTONDOWN:    self._handle_mousedown,
+            MOUSEMOTION:        self._handle_mousemotion,
         }
         
         while True:
