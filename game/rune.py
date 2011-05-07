@@ -1,5 +1,6 @@
 import json
 import math
+import random
 
 import pygame
 
@@ -32,6 +33,8 @@ class RuneGame (engine.EngineV2):
         
         self.start_tile = (1,0)
         self.end_tile = (0,0)
+        
+        self.enemies = []
     
     def startup(self):
         """docstring for startup"""
@@ -43,12 +46,35 @@ class RuneGame (engine.EngineV2):
         
         self.load_level(1)
         
-        self.sprites.add(classes.Enemy((255,0,0), self.start_tile))
+        self.enemies.append(classes.Enemy((255,0,0), self.start_tile))
+        for e in self.enemies:
+            self.sprites.add(e)
     
     def game_logic(self):
-        pass
-        # for s in self.sprites:
-        #     s.accelerate(self.mouse)
+        for e in self.enemies:
+            if tuple(e.position) == e.target:
+                next = self.pathway[e.target]['next']
+                
+                if next == None:
+                    self.enemy_reaches_end(e)
+                else:
+                    e.target = self.pathway[e.target]['next']
+    
+    def enemy_reaches_end(self, enemy):
+        e1 = classes.Enemy((255,0,0), self.start_tile)
+        e1.move_speed = random.random()
+        
+        e2 = classes.Enemy((255,0,0), self.start_tile)
+        e2.move_speed = random.random()
+        
+        self.enemies.append(e1)
+        self.enemies.append(e2)
+        
+        self.sprites.add(e1)
+        self.sprites.add(e2)
+        
+        self.sprites.remove(enemy)
+        self.enemies.remove(enemy)
     
     def load_level(self, level):
         # Wipeout all the existing level terrain
@@ -67,9 +93,6 @@ class RuneGame (engine.EngineV2):
                 raise
             except Exception as e:
                 raise
-        
-        # the_board = pygame.Rect(0, 0, WINDOWWIDTH, WINDOWHEIGHT)
-        # self.surface.blit(self.resources['board'], the_board)
         
         self.background = pygame.display.get_surface()
         
@@ -93,6 +116,8 @@ class RuneGame (engine.EngineV2):
                 else:
                     raise KeyError("Key of '{0}' could not be handled".format(tile))
         
+        # Sets the background in such a way the sprites refresh correctly
+        self.background = self.background.copy()
         
         # Now to pathfind
         self.build_pathway()
