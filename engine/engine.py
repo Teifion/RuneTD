@@ -9,6 +9,10 @@ import pygame
 from pygame.locals import *
 
 class EngineV2 (object):
+    fps = 40
+    windowwidth = 800
+    windowheight = 600
+    
     def __init__(self):
         super(EngineV2, self).__init__()
         self.keys_down = {}
@@ -46,7 +50,7 @@ class EngineV2 (object):
         pygame.display.set_caption(self.name)
         
         # Default background
-        self.background = self.resources['bg_image']
+        self.background = self.resources['bg_image'].copy()
     
     def draw_text(self, text, font, surface, x, y):
         textobj = font.render(text, 1, (0,0,0))
