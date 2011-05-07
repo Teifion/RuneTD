@@ -15,17 +15,26 @@ class RuneGame (engine.EngineV2):
     windowwidth = 30*tile_size
     windowheight = 20*tile_size
     
+    enemy_size = 15
+    rune_size = 30
+    
     def __init__(self):
         super(RuneGame, self).__init__()
         
         self.resources = {
             "bg_image": pygame.image.load('media/full_bg.png'),
             
+            # Tiles
             "wall_image": pygame.image.load('media/wall.png'),
             "walkway_image": pygame.image.load('media/walkway.png'),
             
             "start_image": pygame.image.load('media/start.png'),
             "end_image": pygame.image.load('media/end.png'),
+            
+            # Runes
+            
+            # Enemies
+            "pink_rune": pygame.image.load('media/rune.png'),
         }
         
         self.tiles = {}
@@ -35,18 +44,14 @@ class RuneGame (engine.EngineV2):
         self.end_tile = (0,0)
         
         self.enemies = []
+        self.runes = []
     
     def startup(self):
-        """docstring for startup"""
-        
-        # self.enemies = pygame.sprite.Group()
-        # self.enemies.add(classes.Enemy())
-        
         super(RuneGame, self).startup()
         
         self.load_level(1)
         
-        self.enemies.append(classes.Enemy((255,0,0), self.start_tile))
+        self.enemies.append(classes.Enemy(self, (255,0,0), self.start_tile))
         for e in self.enemies:
             self.sprites.add(e)
     
@@ -61,10 +66,10 @@ class RuneGame (engine.EngineV2):
                     e.target = self.pathway[e.target]['next']
     
     def enemy_reaches_end(self, enemy):
-        e1 = classes.Enemy((255,0,0), self.start_tile)
+        e1 = classes.Enemy(self, (255,0,0), self.start_tile)
         e1.move_speed = random.random()
         
-        e2 = classes.Enemy((255,0,0), self.start_tile)
+        e2 = classes.Enemy(self, (255,0,0), self.start_tile)
         e2.move_speed = random.random()
         
         self.enemies.append(e1)
@@ -73,8 +78,28 @@ class RuneGame (engine.EngineV2):
         self.sprites.add(e1)
         self.sprites.add(e2)
         
+        self.remove_enemy(enemy)
+    
+    def remove_enemy(self, enemy):
         self.sprites.remove(enemy)
         self.enemies.remove(enemy)
+    
+    def remove_rune(self, rune):
+        self.sprites.remove(enemy)
+        self.runes.remove(enemy)
+    
+    def add_rune(self, rune_type, position):
+        r = classes.Pink_rune(self, position)
+        
+        self.runes.append(r)
+        self.sprites.add(r)
+    
+    def handle_mouseup(self, event):
+        x, y = event.pos
+        x /= 35
+        y /= 35
+        
+        self.add_rune("pink", (x,y))
     
     def load_level(self, level):
         # Wipeout all the existing level terrain
