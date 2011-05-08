@@ -34,7 +34,7 @@ class EngineV2 (object):
         self.mouse_is_down = False
         
         self.sprites = pygame.sprite.RenderUpdates()
-    
+        
     def game_logic(self):
         """
         This is called every execution loop to allow the game to do 'stuff'
@@ -177,3 +177,28 @@ class EngineV2 (object):
         
         self.quit()
 
+class Text_display (pygame.sprite.Sprite):
+    def __init__(self, position, text, font_name="Helvetica", font_size=20):
+        pygame.sprite.Sprite.__init__(self)
+        
+        self.font = pygame.font.SysFont(font_name, font_size)
+        
+        self.position = position
+        
+        self.text = text
+        self._last_text = ""
+        
+    def update(self, *args, **kwargs):
+        if self._last_text != self.text:
+            self._last_text = self.text
+            
+            self.image = pygame.Surface(self.font.size(self.text))
+            self.rect = self.image.get_rect()
+            self.rect.topleft = self.position
+            
+            textobj = self.font.render(self.text, 1, (255,0,0))
+            textrect = textobj.get_rect()
+            textrect.topleft = (0, 0)
+            self.image.blit(textobj, textrect)
+    
+    
