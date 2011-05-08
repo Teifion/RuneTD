@@ -1,4 +1,4 @@
-Just like any other TD except that your towers are built from runes, each gives stats and effects. Get the balance right and you're good to go.
+Just like any other TD except that your towers are built from runes, each gives stats and effects. Get the balance right and you're good to go. Currently it's a case of clicking to place towers and have them shoot at the red squares, each square that survives will spawn more of them, not a lot of strategy but it's a work in progress.
 
 Dependancies:
     Python 2.6.1
