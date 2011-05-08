@@ -13,7 +13,7 @@ class RuneGame (engine.EngineV2):
     
     fps = 40
     windowwidth = 30*tile_size
-    windowheight = 20*tile_size
+    windowheight = 20*tile_size + 20
     
     enemy_size = 15
     rune_size = 30
@@ -31,10 +31,13 @@ class RuneGame (engine.EngineV2):
             "start_image": pygame.image.load('media/start.png'),
             "end_image": pygame.image.load('media/end.png'),
             
-            # Runes
-            
             # Enemies
+            
+            # Runes
             "pink_rune": pygame.image.load('media/rune.png'),
+            
+            # Bullets
+            "pink_bullet": pygame.image.load('media/bullet.png'),
         }
         
         self.tiles = {}
@@ -45,16 +48,30 @@ class RuneGame (engine.EngineV2):
         
         self.enemies = []
         self.runes = []
+        self.shots = []
     
     def startup(self):
         super(RuneGame, self).startup()
         
+        # Text displays
+        self.enemies_on_screen = engine.Text_display((15, self.windowheight-20), "0 Enemies")
+        self.runes_on_screen = engine.Text_display((150, self.windowheight-20), "0 Runes")
+        
+        self.sprites.add(self.enemies_on_screen)
+        self.sprites.add(self.runes_on_screen)
+        
         self.load_level(1)
         
-        self.enemies.append(classes.Enemy(self, (255,0,0), self.start_tile))
-        for e in self.enemies:
-            self.sprites.add(e)
-    
+        for i in range(0,50):
+            e = classes.Enemy(self, (255,0,0), self.start_tile)
+            e.move_speed = min(random.random(), 0.75) + 0.25
+            self.add_enemy(e)
+        
+        self.enemies_on_screen.text = "%s enemies" % len(self.enemies)
+        self.runes_on_screen.text = "%s runes" % len(self.runes)
+        
+        self.add_rune("Pink", (5,5))
+        
     def game_logic(self):
         for e in self.enemies:
             if tuple(e.position) == e.target:
@@ -66,40 +83,71 @@ class RuneGame (engine.EngineV2):
                     e.target = self.pathway[e.target]['next']
     
     def enemy_reaches_end(self, enemy):
-        e1 = classes.Enemy(self, (255,0,0), self.start_tile)
-        e1.move_speed = random.random()
-        
-        e2 = classes.Enemy(self, (255,0,0), self.start_tile)
-        e2.move_speed = random.random()
-        
-        self.enemies.append(e1)
-        self.enemies.append(e2)
-        
-        self.sprites.add(e1)
-        self.sprites.add(e2)
+        for i in range(0,5):
+            e = classes.Enemy(self, (255,0,0), self.start_tile)
+            e.move_speed = max(random.random(), 0.3) - 0.25
+            
+            self.add_enemy(e)
         
         self.remove_enemy(enemy)
     
+    def add_enemy(self, enemy):
+        self.enemies.append(enemy)
+        self.sprites.add(enemy)
+        self.enemies_on_screen.text = "%s enemies" % len(self.enemies)
+    
     def remove_enemy(self, enemy):
+        for r in self.runes:
+            if r.target == enemy:
+                r.target = None
+        
+        if enemy not in self.enemies:
+            print("Not removing %s" % id(enemy))
+            return
+        
+        print("Removing %s" % id(enemy))
+        
         self.sprites.remove(enemy)
         self.enemies.remove(enemy)
+        enemy.remove()
+        self.enemies_on_screen.text = "%s enemies" % len(self.enemies)
     
     def remove_rune(self, rune):
         self.sprites.remove(enemy)
         self.runes.remove(enemy)
+        self.runes_on_screen.text = "%s runes" % len(self.runes)
     
     def add_rune(self, rune_type, position):
+        if self.tiles[position] != "0":
+            raise engine.Illegal_move("Can only place a rune on a wall")
+        
+        for r in self.runes:
+            if r.position == list(position):
+                raise engine.Illegal_move("Can only place a rune on top of another rune")
+        
         r = classes.Pink_rune(self, position)
         
         self.runes.append(r)
         self.sprites.add(r)
+        self.runes_on_screen.text = "%s runes" % len(self.runes)
+    
+    def add_shot(self, shot):
+        self.shots.append(shot)
+        self.sprites.add(shot)
+    
+    def remove_shot(self, shot):
+        self.shots.remove(shot)
+        self.sprites.remove(shot)
     
     def handle_mouseup(self, event):
         x, y = event.pos
         x /= 35
         y /= 35
         
-        self.add_rune("pink", (x,y))
+        try:
+            self.add_rune("pink", (x,y))
+        except engine.Illegal_move as e:
+            pass
     
     def load_level(self, level):
         # Wipeout all the existing level terrain
