@@ -8,6 +8,19 @@ import time
 import pygame
 from pygame.locals import *
 
+class Game_error(Exception):
+    """Errors related to the game in general"""
+    pass
+
+class Illegal_move(Game_error):
+    """Errors from illegal moves"""
+    pass
+
+class Game_rule_error(Game_error):
+    """Errors that arise from rule issues"""
+    pass
+
+
 class EngineV2 (object):
     fps = 40
     windowwidth = 800
