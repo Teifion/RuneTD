@@ -1,6 +1,7 @@
 import json
 import math
 import random
+import time
 
 import pygame
 
@@ -12,7 +13,10 @@ class RuneGame (engine.EngineV2):
     tile_size = 35
     
     fps = 40
-    windowwidth = 30*tile_size
+    
+    menu_width = 120
+    
+    windowwidth = 30*tile_size + menu_width
     windowheight = 20*tile_size + 20
     
     enemy_size = 15
@@ -44,6 +48,10 @@ class RuneGame (engine.EngineV2):
             "Pink": runes.PinkRune,
         }
         
+        self.enemy_types = {
+            "Goblin":   enemies.Goblin,
+        }
+        
         self.tiles = {}
         self.pathway = {}
         
@@ -53,10 +61,19 @@ class RuneGame (engine.EngineV2):
         self.enemies = []
         self.runes = []
         self.shots = []
-    
+        
+        # Level stuff
+        self.level = 1
+        self.level_data = {}
+        self.wave = -1
+        
+        # Used to release enemies 1 at a time so that they don't all bunch up too much
+        self.enemy_queue = []
+        self.queue_pause_till = 0
+        
     def new_game(self):
         # Load new level
-        self.load_level(1)
+        self.load_level()
         
         self.kills = 0
         self.money = 100
@@ -68,6 +85,7 @@ class RuneGame (engine.EngineV2):
         
         # Update based on money
         self.money_display.text = "%s gold" % len(self.runes)
+        self.next_wave()
     
     def startup(self):
         super(RuneGame, self).startup()
@@ -79,7 +97,7 @@ class RuneGame (engine.EngineV2):
         self.kill_display = engine.Text_display((350, self.windowheight-20), "0 kills")
         self.lives_display = engine.Text_display((450, self.windowheight-20), "20 lives")
         
-        self.status_display = engine.Text_display((900, self.windowheight-20), "In progress")
+        self.status_display = engine.Text_display((800, self.windowheight-20), "In progress")
         
         self.sprites.add(self.enemies_on_screen)
         self.sprites.add(self.runes_on_screen)
@@ -91,11 +109,6 @@ class RuneGame (engine.EngineV2):
         # Start the new game
         self.new_game()
         
-        for i in range(0,50):
-            e = enemies.Goblin(self, (255,0,0), self.start_tile)
-            e.move_speed = min(random.random(), 0.75) + 0.25
-            self.add_enemy(e)
-        
         self.enemies_on_screen.text = "%s %s" % (len(self.enemies), "enemy" if len(self.enemies) == 1 else "enemies")
         self.runes_on_screen.text = "%s runes" % len(self.runes)
         self.money_display.text = "%s gold" % self.money
@@ -103,6 +116,16 @@ class RuneGame (engine.EngineV2):
         self.lives_display.text = "%s %s" % (self.lives, "life" if self.lives == 1 else "lives")
         
     def game_logic(self):
+        # Do we need to release enemies?
+        if len(self.enemy_queue) > 0:
+            self.status_display.text = "%s %s in queue" % (len(self.enemy_queue), "enemy" if len(self.enemy_queue) == 1 else "enemies")
+            if time.time() > self.queue_pause_till:
+                self.add_enemy(self.enemy_queue.pop(0))
+                self.queue_pause_till = time.time() + 0.15
+        else:
+            if time.time() < self.queue_pause_till:
+                self.status_display.text = str(int(self.queue_pause_till - time.time()))
+        
         for e in self.enemies:
             if tuple(e.position) == e.target:
                 next = self.pathway[e.target]['next']
@@ -113,12 +136,6 @@ class RuneGame (engine.EngineV2):
                     e.target = self.pathway[e.target]['next']
     
     def enemy_reaches_end(self, enemy):
-        for i in range(0,5):
-            e = enemies.Goblin(self, (255,0,0), self.start_tile)
-            e.move_speed = max(random.random(), 0.6) - 0.5
-            
-            self.add_enemy(e)
-        
         self.remove_enemy(enemy)
         self.lives -= 1
         self.lives_display.text = "%s %s" % (self.lives, "life" if self.lives == 1 else "lives")
@@ -133,9 +150,12 @@ class RuneGame (engine.EngineV2):
         
         self.status_display.text = "Game over"
     
-    def add_enemy(self, enemy):
-        self.enemies.append(enemy)
-        self.sprites.add(enemy)
+    def add_enemy(self, enemy_name):
+        enemy_type = self.enemy_types[enemy_name]
+        e = enemy_type(self)
+        
+        self.enemies.append(e)
+        self.sprites.add(e)
         self.enemies_on_screen.text = "%s enemies" % len(self.enemies)
     
     def remove_enemy(self, enemy):
@@ -154,6 +174,9 @@ class RuneGame (engine.EngineV2):
         self.enemies.remove(enemy)
         enemy.remove()
         self.enemies_on_screen.text = "%s enemies" % len(self.enemies)
+        
+        if len(self.enemies) < 1 and len(self.enemy_queue) < 1:
+            self.next_wave()
     
     def remove_rune(self, rune):
         self.sprites.remove(enemy)
@@ -189,6 +212,24 @@ class RuneGame (engine.EngineV2):
         self.shots.remove(shot)
         self.sprites.remove(shot)
     
+    def next_wave(self):
+        self.wave += 1
+        self.queue_pause_till = time.time() + 3
+        
+        # Feed the next wave into the queue
+        if self.wave >= len(self.level_data['waves']):
+            self.complete_level()
+        else:
+            current_wave = self.level_data['waves'][self.wave]
+        
+        for group in current_wave:
+            for i in range(group['count']):
+                self.enemy_queue.append(group['enemy'])
+    
+    def complete_level(self):
+        raise Exception("Not implimented")
+        pass
+    
     def handle_mouseup(self, event):
         x, y = event.pos
         x /= 35
@@ -199,19 +240,19 @@ class RuneGame (engine.EngineV2):
         except engine.Illegal_move as e:
             pass
     
-    def load_level(self, level):
-        # Wipeout all the existing level terrain
-        # for k, s in self.walls.items(): s.kill()
-        # for k, s in self.walkways.items(): s.kill()
+    def load_level(self):
+        # Reset level counters
+        self.level += 1
+        self.wave = -1
         
-        level = str(level)
+        # Load terrain
         with open('game/levels.json') as f:
             try:
                 json_data = json.load(f)
-                level_data = json_data[level]
+                self.level_data = json_data[str(self.level)]
             except KeyError as e:
                 print("Level '{0}' not found, level list: {1}".format(
-                    level, list(json_data.keys())
+                    self.level, list(json_data.keys())
                 ))
                 raise
             except Exception as e:
@@ -220,7 +261,7 @@ class RuneGame (engine.EngineV2):
         self.background = pygame.display.get_surface()
         
         # Take them from data form and make them python objects
-        for y, row in enumerate(level_data['floor']):
+        for y, row in enumerate(self.level_data['floor']):
             for x, tile in enumerate(row):
                 self.tiles[(x,y)] = tile
                 pos = [x * self.tile_size, y * self.tile_size]
