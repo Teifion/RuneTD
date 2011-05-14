@@ -158,6 +158,8 @@ class Bullet (pygame.sprite.Sprite):
     def hit(self):
         if self.sprite_target != None:
             self.game.remove_enemy(self.sprite_target)
+            self.game.kills += 1
+            self.game.kill_display.text = "%s kill%s" % (self.game.kills, "" if self.game.kills == 1 else "s")
         
         self.game.remove_shot(self)
 
