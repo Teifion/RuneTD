@@ -142,7 +142,7 @@ class EngineV2 (object):
         # Cmd + Q
         if 113 in self.keys_down and 310 in self.keys_down:
             if self.keys_down[310] <= self.keys_down[113]:# Cmd has to be pushed first
-                quit()
+                self.quit()
         
         # Cmd + N
         # if 106 in self.keys_down and 310 in self.keys_down:
@@ -159,6 +159,7 @@ class EngineV2 (object):
             MOUSEBUTTONUP:      self._handle_mouseup,
             MOUSEBUTTONDOWN:    self._handle_mousedown,
             MOUSEMOTION:        self._handle_mousemotion,
+            QUIT:               self.quit,
         }
         
         while True:
@@ -166,7 +167,7 @@ class EngineV2 (object):
                 if event.type in func_dict:
                     func_dict[event.type](event)
                 else:
-                    # print("Unhanded event {0}".format(event))
+                    # raise Exception("Unhanded event {0}".format(event))
                     pass
             
             self.game_logic()
