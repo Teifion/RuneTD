@@ -291,9 +291,9 @@ class RuneGame (engine.EngineV2):
         Builds a pathway through the maze so that enemies know where to go.
         """
         def distance(pos1, pos2):
-        	x = abs(pos1[0] - pos2[0])
-        	y = abs(pos1[1] - pos2[1])
-        	return math.sqrt(x*x + y*y)
+            x = abs(pos1[0] - pos2[0])
+            y = abs(pos1[1] - pos2[1])
+            return math.sqrt(x*x + y*y)
         
         walked_tiles = set()
         dead_tiles = set()
@@ -366,6 +366,36 @@ class RuneGame (engine.EngineV2):
             
             # Ensure we don't go back over this one
             walked_tiles.add(best_tile[0])
+        
+        
+        # Next we run through the steps, we have a path but it may
+        # be that the path loops around a little bit
+        # we go through each step and if it is next to a step ahead
+        # of itself then we cut straigth to that
+        # thus generating the shortest path
+        step_count = len(steps)
+        i = -1
+        
+        while i < step_count-1:# Use while because we're re-ordering our steps list
+            i += 1
+            x1, y1 = steps[i][0]
+            jumped = False
+            
+            for j in range(step_count-1, i+2, -1):
+                if jumped: continue
+                
+                x2, y2 = steps[j][0]
+                
+                if abs(x1 - x2) > 1: continue
+                if abs(y1 - y2) > 1: continue
+                
+                # It's next to another tile further on, we can jump it!
+                for c in range(i+1, j):
+                    del(steps[i+1])
+                
+                jumped = True
+                step_count = len(steps)
+        
         
         # We now have a list of steps taken
         self.pathway = {}
