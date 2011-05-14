@@ -5,22 +5,22 @@ import math
 
 class Enemy (pygame.sprite.Sprite):
     reward = 0
+    move_speed = 1
     
-    def __init__(self, game, color, position):
+    def __init__(self, game):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface([game.enemy_size, game.enemy_size])
-        self.image.fill(color)
+        self.image.fill(self.colour)
         self.rect = self.image.get_rect()
         self.rect.topleft = (-100, -100)# Start offscreen
         
         self.next_update_time = 0 # update() hasn't been called yet.
         
-        self.position = list(position)
-        self.target = tuple(position)
+        self.position = list(game.start_tile)
+        self.target = tuple(game.start_tile)
         
         self.offset = game.tile_size/2 - game.enemy_size/2
         
-        self.move_speed = 1
         self.chasers = []
         self.disabled = False
         
