@@ -96,10 +96,6 @@ class RuneGame (engine.EngineV2):
             e.move_speed = min(random.random(), 0.75) + 0.25
             self.add_enemy(e)
         
-        self.add_rune("Pink", (8,5))
-        self.add_rune("Pink", (10,5))
-        self.quit()
-        
         self.enemies_on_screen.text = "%s %s" % (len(self.enemies), "enemy" if len(self.enemies) == 1 else "enemies")
         self.runes_on_screen.text = "%s runes" % len(self.runes)
         self.money_display.text = "%s gold" % self.money
