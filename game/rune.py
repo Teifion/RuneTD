@@ -75,11 +75,14 @@ class RuneGame (engine.EngineV2):
         self.kill_display = engine.Text_display((350, self.windowheight-20), "0 kills")
         self.lives_display = engine.Text_display((450, self.windowheight-20), "20 lives")
         
+        self.status_display = engine.Text_display((900, self.windowheight-20), "In progress")
+        
         self.sprites.add(self.enemies_on_screen)
         self.sprites.add(self.runes_on_screen)
         self.sprites.add(self.money_display)
         self.sprites.add(self.kill_display)
         self.sprites.add(self.lives_display)
+        self.sprites.add(self.status_display)
         
         # Start the new game
         self.new_game()
@@ -125,6 +128,8 @@ class RuneGame (engine.EngineV2):
         for e in self.enemies: e.disabled = True
         for r in self.runes: r.disabled = True
         for s in self.shots: s.disabled = True
+        
+        
         
     
     def add_enemy(self, enemy):
