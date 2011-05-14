@@ -50,25 +50,46 @@ class RuneGame (engine.EngineV2):
         self.runes = []
         self.shots = []
     
+    def new_game(self):
+        # Load new level
+        self.load_level(1)
+        
+        self.kills = 0
+        self.money = 6
+        
+        for e in self.enemies: self.remove_enemy(e)
+        for r in self.runes: self.remove_rune(r)
+        for s in self.shots: self.remove_shot(s)
+        
+        # Update based on money
+        self.money_display.text = "%s gold" % len(self.runes)
+    
     def startup(self):
         super(RuneGame, self).startup()
         
         # Text displays
-        self.enemies_on_screen = engine.Text_display((15, self.windowheight-20), "0 Enemies")
-        self.runes_on_screen = engine.Text_display((150, self.windowheight-20), "0 Runes")
+        self.enemies_on_screen = engine.Text_display((15, self.windowheight-20), "0 enemies")
+        self.runes_on_screen = engine.Text_display((150, self.windowheight-20), "0 runes")
+        self.money_display = engine.Text_display((250, self.windowheight-20), "0 gold")
+        self.kill_display = engine.Text_display((350, self.windowheight-20), "0 kills")
         
         self.sprites.add(self.enemies_on_screen)
         self.sprites.add(self.runes_on_screen)
+        self.sprites.add(self.money_display)
+        self.sprites.add(self.kill_display)
         
-        self.load_level(1)
+        # Start the new game
+        self.new_game()
         
         for i in range(0,50):
             e = classes.Enemy(self, (255,0,0), self.start_tile)
             e.move_speed = min(random.random(), 0.75) + 0.25
             self.add_enemy(e)
         
-        self.enemies_on_screen.text = "%s enemies" % len(self.enemies)
+        self.enemies_on_screen.text = "%s %s" % (len(self.enemies), "enemy" if len(self.enemies) == 1 else "enemies")
         self.runes_on_screen.text = "%s runes" % len(self.runes)
+        self.money_display.text = "%s gold" % self.money
+        self.kill_display.text = "%s kill%s" % (self.kills, "" if self.kills == 1 else "s")
         
         self.add_rune("Pink", (5,5))
         
@@ -121,9 +142,15 @@ class RuneGame (engine.EngineV2):
         if self.tiles[position] != "0":
             raise engine.Illegal_move("Can only place a rune on a wall")
         
+        if self.money < 1:
+            raise engine.Illegal_move("No money")
+        
         for r in self.runes:
             if r.position == list(position):
                 raise engine.Illegal_move("Can only place a rune on top of another rune")
+        
+        self.money -= 1
+        self.money_display.text = "%s gold" % self.money
         
         r = classes.Pink_rune(self, position)
         
