@@ -131,7 +131,7 @@ class RuneGame (engine.EngineV2):
         for r in self.runes: r.disabled = True
         for s in self.shots: s.disabled = True
         
-        print("\nGAME OVER\n")
+        self.status_display.text = "Game over"
     
     def add_enemy(self, enemy):
         self.enemies.append(enemy)
@@ -145,6 +145,10 @@ class RuneGame (engine.EngineV2):
         
         if enemy not in self.enemies:
             return
+        
+        # Give reward
+        self.money += enemy.reward
+        self.money_display.text = "%s gold" % self.money
         
         self.sprites.remove(enemy)
         self.enemies.remove(enemy)

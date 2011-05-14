@@ -4,6 +4,8 @@ import random
 import math
 
 class Enemy (pygame.sprite.Sprite):
+    reward = 0
+    
     def __init__(self, game, color, position):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface([game.enemy_size, game.enemy_size])

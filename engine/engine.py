@@ -20,7 +20,6 @@ class Game_rule_error(Game_error):
     """Errors that arise from rule issues"""
     pass
 
-
 class EngineV2 (object):
     fps = 40
     windowwidth = 800
@@ -34,7 +33,7 @@ class EngineV2 (object):
         self.mouse_is_down = False
         
         self.sprites = pygame.sprite.RenderUpdates()
-        
+    
     def game_logic(self):
         """
         This is called every execution loop to allow the game to do 'stuff'
@@ -77,11 +76,7 @@ class EngineV2 (object):
         pygame.display.update(rectlist)
         pygame.time.delay(10)
         
-        # This method doesn't refresh correctly
         self.sprites.clear(self.screen, self.background)
-        
-        # This one does
-        # self.sprites.clear(self.screen, self.resources['bg_image'])
 
     
     # Event handlers
