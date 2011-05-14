@@ -56,6 +56,7 @@ class RuneGame (engine.EngineV2):
         
         self.kills = 0
         self.money = 6
+        self.lives = 20
         
         for e in self.enemies: self.remove_enemy(e)
         for r in self.runes: self.remove_rune(r)
@@ -72,11 +73,13 @@ class RuneGame (engine.EngineV2):
         self.runes_on_screen = engine.Text_display((150, self.windowheight-20), "0 runes")
         self.money_display = engine.Text_display((250, self.windowheight-20), "0 gold")
         self.kill_display = engine.Text_display((350, self.windowheight-20), "0 kills")
+        self.lives_display = engine.Text_display((450, self.windowheight-20), "20 lives")
         
         self.sprites.add(self.enemies_on_screen)
         self.sprites.add(self.runes_on_screen)
         self.sprites.add(self.money_display)
         self.sprites.add(self.kill_display)
+        self.sprites.add(self.lives_display)
         
         # Start the new game
         self.new_game()
@@ -90,6 +93,7 @@ class RuneGame (engine.EngineV2):
         self.runes_on_screen.text = "%s runes" % len(self.runes)
         self.money_display.text = "%s gold" % self.money
         self.kill_display.text = "%s kill%s" % (self.kills, "" if self.kills == 1 else "s")
+        self.lives_display.text = "%s %s" % (self.lives, "life" if self.lives == 1 else "lives")
         
         self.add_rune("Pink", (5,5))
         
@@ -106,11 +110,22 @@ class RuneGame (engine.EngineV2):
     def enemy_reaches_end(self, enemy):
         for i in range(0,5):
             e = classes.Enemy(self, (255,0,0), self.start_tile)
-            e.move_speed = max(random.random(), 0.3) - 0.25
+            e.move_speed = max(random.random(), 0.6) - 0.5
             
             self.add_enemy(e)
         
         self.remove_enemy(enemy)
+        self.lives -= 1
+        self.lives_display.text = "%s %s" % (self.lives, "life" if self.lives == 1 else "lives")
+        
+        if self.lives <= 0:
+            self.lose_game()
+    
+    def lose_game(self):
+        for e in self.enemies: e.disabled = True
+        for r in self.runes: r.disabled = True
+        for s in self.shots: s.disabled = True
+        
     
     def add_enemy(self, enemy):
         self.enemies.append(enemy)

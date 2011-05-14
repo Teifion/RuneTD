@@ -20,8 +20,11 @@ class Enemy (pygame.sprite.Sprite):
         
         self.move_speed = 1
         self.chasers = []
+        self.disabled = False
     
     def update(self, current_time):
+        if self.disabled: return
+        
         # Update every 10 milliseconds = 1/100th of a second.
         if self.next_update_time < current_time or True:
             if self.position[0] < self.target[0]:
@@ -58,8 +61,11 @@ class Rune (pygame.sprite.Sprite):
         self.target = None
         self.range = 6
         self.game = game
+        self.disabled = False
     
     def update(self, current_time):
+        if self.disabled: return
+        
         if self.next_update_time < current_time or True:
             self.rect.left = self.position[0] * 35 + self.offset
             self.rect.top = self.position[1] * 35 + self.offset

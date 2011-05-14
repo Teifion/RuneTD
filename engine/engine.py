@@ -152,8 +152,6 @@ class EngineV2 (object):
     def start(self):
         self.startup()
         
-        # Dictionary lookup is faster than an if-statement
-        # We're going to iterate over this loop so much it's well worth it
         func_dict = {
             ACTIVEEVENT:        self._handle_active,
             KEYDOWN:            self._handle_keydown,
