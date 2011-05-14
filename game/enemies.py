@@ -4,7 +4,7 @@ class Goblin (classes.Enemy):
     max_hp = 100
     reward = 1
     
-    move_speed = 0.1
+    move_speed = 0.4
     
     colour = (255,0,0)
     
