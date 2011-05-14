@@ -21,6 +21,9 @@ class Enemy (pygame.sprite.Sprite):
         self.move_speed = 1
         self.chasers = []
         self.disabled = False
+        
+        # This has to be set by the sub_class
+        self.hp = self.max_hp
     
     def update(self, current_time):
         if self.disabled: return
@@ -45,8 +48,12 @@ class Enemy (pygame.sprite.Sprite):
 class Rune (pygame.sprite.Sprite):
     def __init__(self, game, position):
         pygame.sprite.Sprite.__init__(self)
+        
         # Image is set by subclass
-        self.image = pygame.Surface([game.rune_size, game.rune_size])
+        # self.image = game.resources[self.image_name].copy()
+        self.image = game.resources[self.image_name].copy()
+        #pygame.Surface([game.rune_size, game.rune_size])
+        
         self.rect = self.image.get_rect()
         self.rect.topleft = (-100, -100)# Start offscreen
         
@@ -58,6 +65,7 @@ class Rune (pygame.sprite.Sprite):
         
         self.offset = game.tile_size/2 - game.rune_size/2
         
+        self.cost = 10
         self.target = None
         self.range = 6
         self.game = game
@@ -92,18 +100,12 @@ class Rune (pygame.sprite.Sprite):
             s = self.shot_type(self.game, self.position, self.target)
             self.game.add_shot(s)
         else:
-            print("No target")
+            pass
     
     def distance(self, enemy):
         x = abs(self.position[0] - enemy.position[0])
         y = abs(self.position[1] - enemy.position[1])
         return math.sqrt(x*x + y*y)
-
-class Pink_rune (Rune):
-    def __init__(self, game, position):
-        super(Pink_rune, self).__init__(game, position)
-        self.image = game.resources['pink_rune']
-        self.shot_type = Pink_bullet
 
 
 class Bullet (pygame.sprite.Sprite):
@@ -122,6 +124,7 @@ class Bullet (pygame.sprite.Sprite):
         
         self.move_speed = 0.5
         
+        self.damage = 0
         self.game = game
         self.seeking = False
         
@@ -168,8 +171,3 @@ class Bullet (pygame.sprite.Sprite):
             self.game.kill_display.text = "%s kill%s" % (self.game.kills, "" if self.game.kills == 1 else "s")
         
         self.game.remove_shot(self)
-
-class Pink_bullet (Bullet):
-    def __init__(self, game, position, target):
-        super(Pink_bullet, self).__init__(game, position, target)
-        self.image = game.resources['pink_bullet']
