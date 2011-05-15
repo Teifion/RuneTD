@@ -24,11 +24,22 @@
         ],
         "waves": [
             [
-                {"enemy":"Goblin", "count":20}
+                {"enemy":"Red triangle", "count":20}
             ],
-            
             [
-                {"enemy":"Goblin", "count":40}
+                {"enemy":"Red triangle", "count":10},
+                {"enemy":"Blue circle", "count":10}
+            ],
+            [
+                {"enemy":"Red triangle", "count":10},
+                {"enemy":"Blue circle", "count":10},
+                {"enemy":"Pink square", "count":10}
+            ],
+            [
+                {"enemy":"Red triangle", "count":10},
+                {"enemy":"Blue circle", "count":10},
+                {"enemy":"Pink square", "count":10},
+                {"enemy":"Orange octagon", "count":10}
             ]
         ],
         "reward": 10
@@ -58,11 +69,11 @@
         ],
         "waves": [
             [
-                {"enemy":"Goblin", "count":20}
+                {"enemy":"Red triangle", "count":20}
             ],
             
             [
-                {"enemy":"Goblin", "count":40}
+                {"enemy":"Red triangle", "count":40}
             ]
         ],
         "reward": 10

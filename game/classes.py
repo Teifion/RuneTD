@@ -3,14 +3,17 @@ import random
 
 import math
 
+# Update every 10 milliseconds = 1/100th of a second
+update_speed = 10
+
 class Enemy (pygame.sprite.Sprite):
     reward = 0
     move_speed = 1
     
     def __init__(self, game):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface([game.enemy_size, game.enemy_size])
-        self.image.fill(self.colour)
+        
+        self.image = game.resources[self.image_name].copy()
         self.rect = self.image.get_rect()
         self.rect.topleft = (-100, -100)# Start offscreen
         
@@ -30,7 +33,6 @@ class Enemy (pygame.sprite.Sprite):
     def update(self, current_time):
         if self.disabled: return
         
-        # Update every 10 milliseconds = 1/100th of a second.
         if self.next_update_time < current_time or True:
             if self.position[0] < self.target[0]:
                 self.position[0] = min(self.position[0] + self.move_speed, self.target[0])
@@ -45,9 +47,12 @@ class Enemy (pygame.sprite.Sprite):
             self.rect.left = self.position[0] * 35 + self.offset
             self.rect.top = self.position[1] * 35 + self.offset
             
-            self.next_update_time = current_time + 10
+            self.next_update_time = current_time + update_speed
 
 class Rune (pygame.sprite.Sprite):
+    cost = 1
+    shot_range = 1
+    
     def __init__(self, game, position):
         pygame.sprite.Sprite.__init__(self)
         
@@ -67,9 +72,7 @@ class Rune (pygame.sprite.Sprite):
         
         self.offset = game.tile_size/2 - game.rune_size/2
         
-        self.cost = 10
         self.target = None
-        self.range = 6
         self.game = game
         self.disabled = False
     
@@ -84,17 +87,17 @@ class Rune (pygame.sprite.Sprite):
                 self.shoot()
                 self.last_shot = current_time
             
-            self.next_update_time = current_time + 10
+            self.next_update_time = current_time + update_speed
         
     def shoot(self):
         # Lose target if it goes out of range
-        if self.target != None and self.distance(self.target) > self.range:
+        if self.target != None and self.distance(self.target) > self.shot_range:
             self.target = None
         
         # Pick a target from the enemies in the list
         if self.target == None:
             for e in self.game.enemies:
-                if self.distance(e) <= self.range:
+                if self.distance(e) <= self.shot_range:
                     self.target = e
                     break
         
@@ -111,6 +114,8 @@ class Rune (pygame.sprite.Sprite):
 
 
 class Bullet (pygame.sprite.Sprite):
+    damage = 0
+    
     def __init__(self, game, position, target):
         pygame.sprite.Sprite.__init__(self)
         # Image is set by subclass
@@ -126,7 +131,6 @@ class Bullet (pygame.sprite.Sprite):
         
         self.move_speed = 0.5
         
-        self.damage = 0
         self.game = game
         self.seeking = False
         
@@ -159,7 +163,7 @@ class Bullet (pygame.sprite.Sprite):
             self.rect.left = self.position[0] * 35 + self.offset
             self.rect.top = self.position[1] * 35 + self.offset
             
-            self.next_update_time = current_time + 10
+            self.next_update_time = current_time + update_speed
     
     def distance(self):
         x = abs(self.position[0] - self.target[0])
@@ -168,8 +172,11 @@ class Bullet (pygame.sprite.Sprite):
     
     def hit(self):
         if self.sprite_target != None:
-            self.game.remove_enemy(self.sprite_target)
-            self.game.kills += 1
-            self.game.kill_display.text = "%s kill%s" % (self.game.kills, "" if self.game.kills == 1 else "s")
+            self.sprite_target.hp -= self.damage
+            
+            if self.sprite_target.hp <= 0:
+                self.game.remove_enemy(self.sprite_target)
+                self.game.kills += 1
+                self.game.kill_display.text = "%s kill%s" % (self.game.kills, "" if self.game.kills == 1 else "s")
         
         self.game.remove_shot(self)

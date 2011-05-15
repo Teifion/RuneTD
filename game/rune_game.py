@@ -26,7 +26,9 @@ class RuneGame (engine.EngineV2):
         super(RuneGame, self).__init__()
         
         self.resources = {
-            "bg_image": pygame.image.load('media/full_bg.png'),
+            # Use this to make a temporary bg image
+            # it'll be ignore when we load a level
+            "bg_image": pygame.image.load('media/wall.png'),
             
             # Tiles
             "wall_image": pygame.image.load('media/wall.png'),
@@ -36,9 +38,16 @@ class RuneGame (engine.EngineV2):
             "end_image": pygame.image.load('media/end.png'),
             
             # Enemies
+            "Red triangle": pygame.image.load('media/red_triangle.png'),
+            "Blue circle": pygame.image.load('media/blue_circle.png'),
+            "Pink square": pygame.image.load('media/pink_square.png'),
+            "Orange octagon": pygame.image.load('media/orange_octagon.png'),
             
             # Runes
-            "PinkRune": pygame.image.load('media/rune.png'),
+            "Pink rune": pygame.image.load('media/pink_rune.png'),
+            "Blue rune": pygame.image.load('media/blue_rune.png'),
+            "Yellow rune": pygame.image.load('media/yellow_rune.png'),
+            "Green rune": pygame.image.load('media/green_rune.png'),
             
             # Bullets
             "PinkBullet": pygame.image.load('media/bullet.png'),
@@ -49,7 +58,10 @@ class RuneGame (engine.EngineV2):
         }
         
         self.enemy_types = {
-            "Goblin":   enemies.Goblin,
+            "Red triangle":   enemies.RedTriangle,
+            "Blue circle":   enemies.BlueCircle,
+            "Pink square":   enemies.PinkSquare,
+            "Orange octagon":   enemies.OrangeOctagon,
         }
         
         self.tiles = {}
@@ -63,13 +75,14 @@ class RuneGame (engine.EngineV2):
         self.shots = []
         
         # Level stuff
-        self.level = 1
+        self.level = 0
         self.level_data = {}
         self.wave = -1
         
         # Used to release enemies 1 at a time so that they don't all bunch up too much
         self.enemy_queue = []
         self.queue_pause_till = 0
+        self.waiting_to_start = False
         
     def new_game(self):
         # Load new level
@@ -99,12 +112,39 @@ class RuneGame (engine.EngineV2):
         
         self.status_display = engine.Text_display((800, self.windowheight-20), "In progress")
         
+        # Rune selection buttons
+        self.pink_rune_button   = engine.Button((self.windowwidth - self.menu_width + 5, 15), self.resources['Pink rune'])
+        self.pink_rune_text     = engine.Text_display((self.windowwidth - self.menu_width + 5, 50), "Basic rune", colour=(255,255,255))
+        
+        self.blue_rune_button   = engine.Button((self.windowwidth - self.menu_width + 5, 90), self.resources['Blue rune'])
+        self.blue_rune_text     = engine.Text_display((self.windowwidth - self.menu_width + 5, 125), "Slow rune", colour=(255,255,255))
+        
+        self.yellow_rune_button = engine.Button((self.windowwidth - self.menu_width + 5, 165), self.resources['Yellow rune'])
+        self.yellow_rune_text   = engine.Text_display((self.windowwidth - self.menu_width + 5, 200), "Splash rune", colour=(255,255,255))
+        
+        self.green_rune_button  = engine.Button((self.windowwidth - self.menu_width + 5, 240), self.resources['Green rune'])
+        self.green_rune_text    = engine.Text_display((self.windowwidth - self.menu_width + 5, 275), "Poison rune", colour=(255,255,255))
+        
+        # Text displays
         self.sprites.add(self.enemies_on_screen)
         self.sprites.add(self.runes_on_screen)
         self.sprites.add(self.money_display)
         self.sprites.add(self.kill_display)
         self.sprites.add(self.lives_display)
         self.sprites.add(self.status_display)
+        
+        # Rune menu at the right
+        self.sprites.add(self.pink_rune_button)
+        self.sprites.add(self.pink_rune_text)
+        
+        self.sprites.add(self.blue_rune_button)
+        self.sprites.add(self.blue_rune_text)
+        
+        self.sprites.add(self.yellow_rune_button)
+        self.sprites.add(self.yellow_rune_text)
+        
+        self.sprites.add(self.green_rune_button)
+        self.sprites.add(self.green_rune_text)
         
         # Start the new game
         self.new_game()
@@ -116,15 +156,18 @@ class RuneGame (engine.EngineV2):
         self.lives_display.text = "%s %s" % (self.lives, "life" if self.lives == 1 else "lives")
         
     def game_logic(self):
-        # Do we need to release enemies?
-        if len(self.enemy_queue) > 0:
+        # Waiting for wave to start
+        if self.waiting_to_start:
+            self.status_display.text = "%ss till wave start" % round(self.queue_pause_till - time.time(), 1)
+        else:
             self.status_display.text = "%s %s in queue" % (len(self.enemy_queue), "enemy" if len(self.enemy_queue) == 1 else "enemies")
-            if time.time() > self.queue_pause_till:
+        
+        # Release stuff?
+        if time.time() > self.queue_pause_till:
+            self.waiting_to_start = False
+            if len(self.enemy_queue) > 0:
                 self.add_enemy(self.enemy_queue.pop(0))
                 self.queue_pause_till = time.time() + 0.15
-        else:
-            if time.time() < self.queue_pause_till:
-                self.status_display.text = str(int(self.queue_pause_till - time.time()))
         
         for e in self.enemies:
             if tuple(e.position) == e.target:
@@ -213,6 +256,7 @@ class RuneGame (engine.EngineV2):
         self.sprites.remove(shot)
     
     def next_wave(self):
+        self.waiting_to_start = True
         self.wave += 1
         self.queue_pause_till = time.time() + 3
         
@@ -238,6 +282,9 @@ class RuneGame (engine.EngineV2):
         try:
             self.add_rune("Pink", (x,y))
         except engine.Illegal_move as e:
+            pass
+        except KeyError as e:
+            # Tried clicking outside of the tiles
             pass
     
     def load_level(self):
