@@ -4,7 +4,7 @@ class RedTriangle (classes.Enemy):
     max_hp = 3
     reward = 1
     
-    move_speed = 0.2
+    move_speed = 0.1
     
     image_name = "Red triangle"
     
@@ -15,7 +15,7 @@ class BlueCircle (classes.Enemy):
     max_hp = 5
     reward = 1
     
-    move_speed = 0.25
+    move_speed = 0.15
     
     image_name = "Blue circle"
     
@@ -26,7 +26,7 @@ class PinkSquare (classes.Enemy):
     max_hp = 8
     reward = 1
     
-    move_speed = 0.3
+    move_speed = 0.2
     
     image_name = "Pink square"
     
@@ -37,7 +37,7 @@ class OrangeOctagon (classes.Enemy):
     max_hp = 10
     reward = 1
     
-    move_speed = 0.35
+    move_speed = 0.25
     
     image_name = "Orange octagon"
     
