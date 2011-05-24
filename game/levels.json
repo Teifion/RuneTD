@@ -24,22 +24,22 @@
         ],
         "waves": [
             [
-                {"enemy":"Red triangle", "count":20, "delay":1}
+                {"enemy":"Red triangle", "count":20, "delay":0.2}
             ],
             [
-                {"enemy":"Red triangle", "count":10, "delay":1},
-                {"enemy":"Blue circle", "count":10, "delay":1}
+                {"enemy":"Red triangle", "count":10, "delay":0.2},
+                {"enemy":"Blue circle", "count":10, "delay":0.3}
             ],
             [
-                {"enemy":"Red triangle", "count":10, "delay":1},
-                {"enemy":"Blue circle", "count":10, "delay":1},
-                {"enemy":"Pink square", "count":10, "delay":1}
+                {"enemy":"Red triangle", "count":10, "delay":0.2},
+                {"enemy":"Blue circle", "count":10, "delay":0.3},
+                {"enemy":"Pink square", "count":10, "delay":0.4}
             ],
             [
-                {"enemy":"Red triangle", "count":10, "delay":1},
-                {"enemy":"Blue circle", "count":10, "delay":1},
-                {"enemy":"Pink square", "count":10, "delay":1},
-                {"enemy":"Orange octagon", "count":10, "delay":1}
+                {"enemy":"Red triangle", "count":10, "delay":0.2},
+                {"enemy":"Blue circle", "count":10, "delay":0.3},
+                {"enemy":"Pink square", "count":10, "delay":0.4},
+                {"enemy":"Orange octagon", "count":10, "delay":0.5}
             ]
         ],
         "reward": 10
