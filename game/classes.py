@@ -52,6 +52,7 @@ class Enemy (pygame.sprite.Sprite):
 class Rune (pygame.sprite.Sprite):
     cost = 1
     shot_range = 1
+    fire_speed = 100
     
     def __init__(self, game, position):
         pygame.sprite.Sprite.__init__(self)
@@ -66,7 +67,6 @@ class Rune (pygame.sprite.Sprite):
         
         self.next_update_time = 0 # update() hasn't been called yet.
         self.last_shot = 0
-        self.fire_speed = 500
         
         self.position = list(position)
         
@@ -115,6 +115,7 @@ class Rune (pygame.sprite.Sprite):
 
 class Bullet (pygame.sprite.Sprite):
     damage = 0
+    move_speed = 0
     
     def __init__(self, game, position, target):
         pygame.sprite.Sprite.__init__(self)
@@ -128,8 +129,6 @@ class Bullet (pygame.sprite.Sprite):
         self.position = list(position)
         
         self.offset = game.tile_size/2 - self.rect.width/2
-        
-        self.move_speed = 0.5
         
         self.game = game
         self.seeking = False
