@@ -16,8 +16,8 @@ class RuneGame (engine.EngineV2):
     
     menu_width = 120
     
-    windowwidth = 30*tile_size + menu_width
-    windowheight = 20*tile_size + 20
+    window_width = 30*tile_size + menu_width
+    window_height = 20*tile_size + 20
     
     enemy_size = 15
     rune_size = 30
@@ -29,41 +29,45 @@ class RuneGame (engine.EngineV2):
             # Use this to make a temporary bg image
             # it'll be ignore when we load a level
             "bg_image": pygame.image.load('media/wall.png'),
+            "selector":     pygame.image.load('media/selector.png'),
             
             # Tiles
-            "wall_image": pygame.image.load('media/wall.png'),
-            "walkway_image": pygame.image.load('media/walkway.png'),
+            "wall_image":       pygame.image.load('media/wall.png'),
+            "walkway_image":    pygame.image.load('media/walkway.png'),
             
-            "start_image": pygame.image.load('media/start.png'),
-            "end_image": pygame.image.load('media/end.png'),
+            "start_image":  pygame.image.load('media/start.png'),
+            "end_image":    pygame.image.load('media/end.png'),
             
             # Enemies
-            "Red triangle": pygame.image.load('media/red_triangle.png'),
-            "Blue circle": pygame.image.load('media/blue_circle.png'),
-            "Pink square": pygame.image.load('media/pink_square.png'),
-            "Orange octagon": pygame.image.load('media/orange_octagon.png'),
+            "Red triangle":     pygame.image.load('media/red_triangle.png'),
+            "Blue circle":      pygame.image.load('media/blue_circle.png'),
+            "Pink square":      pygame.image.load('media/pink_square.png'),
+            "Orange octagon":   pygame.image.load('media/orange_octagon.png'),
             
             # Runes
-            "Pink rune": pygame.image.load('media/pink_rune.png'),
-            "Blue rune": pygame.image.load('media/blue_rune.png'),
-            "Yellow rune": pygame.image.load('media/yellow_rune.png'),
-            "Green rune": pygame.image.load('media/green_rune.png'),
+            "Pink rune":    pygame.image.load('media/pink_rune.png'),
+            "Blue rune":    pygame.image.load('media/blue_rune.png'),
+            "Yellow rune":  pygame.image.load('media/yellow_rune.png'),
+            "Green rune":   pygame.image.load('media/green_rune.png'),
             
             # Bullets
-            "Pink bullet": pygame.image.load('media/pink_bullet.png'),
-            "Blue bullet": pygame.image.load('media/blue_bullet.png'),
-            "Yellow bullet": pygame.image.load('media/yellow_bullet.png'),
-            "Green bullet": pygame.image.load('media/green_bullet.png'),
+            "Pink bullet":      pygame.image.load('media/pink_bullet.png'),
+            "Blue bullet":      pygame.image.load('media/blue_bullet.png'),
+            "Yellow bullet":    pygame.image.load('media/yellow_bullet.png'),
+            "Green bullet":     pygame.image.load('media/green_bullet.png'),
         }
         
         self.rune_types = {
-            "Pink": runes.PinkRune,
+            "Pink":     runes.PinkRune,
+            "Blue":     runes.BlueRune,
+            "Yellow":   runes.YellowRune,
+            "Green":    runes.GreenRune,
         }
         
         self.enemy_types = {
-            "Red triangle":   enemies.RedTriangle,
-            "Blue circle":   enemies.BlueCircle,
-            "Pink square":   enemies.PinkSquare,
+            "Red triangle":     enemies.RedTriangle,
+            "Blue circle":      enemies.BlueCircle,
+            "Pink square":      enemies.PinkSquare,
             "Orange octagon":   enemies.OrangeOctagon,
         }
         
@@ -86,8 +90,10 @@ class RuneGame (engine.EngineV2):
         self.enemy_queue = []
         self.queue_pause_till = 0
         self.waiting_to_start = False
-        
+    
     def new_game(self):
+        self.select_rune_type(rune="Pink")
+        
         # Load new level
         self.load_level()
         
@@ -107,26 +113,42 @@ class RuneGame (engine.EngineV2):
         super(RuneGame, self).startup()
         
         # Text displays
-        self.enemies_on_screen = engine.Text_display((15, self.windowheight-20), "0 enemies")
-        self.runes_on_screen = engine.Text_display((150, self.windowheight-20), "0 runes")
-        self.money_display = engine.Text_display((250, self.windowheight-20), "0 gold")
-        self.kill_display = engine.Text_display((350, self.windowheight-20), "0 kills")
-        self.lives_display = engine.Text_display((450, self.windowheight-20), "20 lives")
+        self.enemies_on_screen = engine.Text_display((15, self.window_height-20), "0 enemies")
+        self.runes_on_screen = engine.Text_display((150, self.window_height-20), "0 runes")
+        self.money_display = engine.Text_display((250, self.window_height-20), "0 gold")
+        self.kill_display = engine.Text_display((350, self.window_height-20), "0 kills")
+        self.lives_display = engine.Text_display((450, self.window_height-20), "20 lives")
         
-        self.status_display = engine.Text_display((800, self.windowheight-20), "In progress")
+        self.status_display = engine.Text_display((800, self.window_height-20), "In progress")
         
         # Rune selection buttons
-        self.pink_rune_button   = engine.Button((self.windowwidth - self.menu_width + 5, 15), self.resources['Pink rune'])
-        self.pink_rune_text     = engine.Text_display((self.windowwidth - self.menu_width + 5, 50), "Basic rune", colour=(255,255,255))
+        self.pink_rune_button   = engine.Button((self.window_width - self.menu_width + 5, 15), self.resources['Pink rune'])
+        self.pink_rune_button.button_up = self.select_rune_type
+        self.pink_rune_button.button_up_kwargs = {"rune":"Pink"}
+        self.add_button(self.pink_rune_button)
+        self.pink_rune_text     = engine.Text_display((self.window_width - self.menu_width + 5, 50), "Basic rune", colour=(255,255,255))
         
-        self.blue_rune_button   = engine.Button((self.windowwidth - self.menu_width + 5, 90), self.resources['Blue rune'])
-        self.blue_rune_text     = engine.Text_display((self.windowwidth - self.menu_width + 5, 125), "Slow rune", colour=(255,255,255))
+        self.blue_rune_button   = engine.Button((self.window_width - self.menu_width + 5, 90), self.resources['Blue rune'])
+        self.blue_rune_button.button_up = self.select_rune_type
+        self.blue_rune_button.button_up_kwargs = {"rune":"Blue"}
+        self.add_button(self.blue_rune_button)
+        self.blue_rune_text     = engine.Text_display((self.window_width - self.menu_width + 5, 125), "Slow rune", colour=(255,255,255))
         
-        self.yellow_rune_button = engine.Button((self.windowwidth - self.menu_width + 5, 165), self.resources['Yellow rune'])
-        self.yellow_rune_text   = engine.Text_display((self.windowwidth - self.menu_width + 5, 200), "Splash rune", colour=(255,255,255))
+        self.yellow_rune_button = engine.Button((self.window_width - self.menu_width + 5, 165), self.resources['Yellow rune'])
+        self.yellow_rune_button.button_up = self.select_rune_type
+        self.yellow_rune_button.button_up_kwargs = {"rune":"Yellow"}
+        self.add_button(self.yellow_rune_button)
+        self.yellow_rune_text   = engine.Text_display((self.window_width - self.menu_width + 5, 200), "Splash rune", colour=(255,255,255))
         
-        self.green_rune_button  = engine.Button((self.windowwidth - self.menu_width + 5, 240), self.resources['Green rune'])
-        self.green_rune_text    = engine.Text_display((self.windowwidth - self.menu_width + 5, 275), "Poison rune", colour=(255,255,255))
+        self.green_rune_button  = engine.Button((self.window_width - self.menu_width + 5, 240), self.resources['Green rune'])
+        self.green_rune_button.button_up = self.select_rune_type
+        self.green_rune_button.button_up_kwargs = {"rune":"Green"}
+        self.add_button(self.green_rune_button)
+        self.green_rune_text    = engine.Text_display((self.window_width - self.menu_width + 5, 275), "Poison rune", colour=(255,255,255))
+        
+        # The 'button' that shows which rune we've selected
+        self.rune_selector = engine.Button((100, 100), self.resources['selector'])
+        self.sprites.add(self.rune_selector)
         
         # Text displays
         self.sprites.add(self.enemies_on_screen)
@@ -157,7 +179,22 @@ class RuneGame (engine.EngineV2):
         self.money_display.text = "%s gold" % self.money
         self.kill_display.text = "%s kill%s" % (self.kills, "" if self.kills == 1 else "s")
         self.lives_display.text = "%s %s" % (self.lives, "life" if self.lives == 1 else "lives")
+    
+    def select_rune_type(self, rune):
+        self.selected_rune = rune
         
+        if rune == "Pink":
+            x, y = self.pink_rune_button.rect.left, self.pink_rune_button.rect.top
+        elif rune == "Blue":
+            x, y = self.blue_rune_button.rect.left, self.blue_rune_button.rect.top
+        elif rune == "Green":
+            x, y = self.green_rune_button.rect.left, self.green_rune_button.rect.top
+        elif rune == "Yellow":
+            x, y = self.yellow_rune_button.rect.left, self.yellow_rune_button.rect.top
+        
+        self.rune_selector.rect.left = x-3
+        self.rune_selector.rect.top = y-3
+    
     def game_logic(self):
         # Waiting for wave to start
         if self.waiting_to_start:
@@ -269,14 +306,37 @@ class RuneGame (engine.EngineV2):
         if self.wave >= len(self.level_data['waves']):
             self.complete_level()
         else:
+            # Give reward
+            self.money += self.level_data['reward']
+            self.money_display.text = "%s gold" % self.money
+            
             current_wave = self.level_data['waves'][self.wave]
-        
-        for group in current_wave:
-            for i in range(group['count']):
-                self.enemy_queue.append((group['enemy'], group['delay']))
+            
+            for group in current_wave:
+                for i in range(group['count']):
+                    self.enemy_queue.append((group['enemy'], group['delay']))
     
     def complete_level(self):
-        raise Exception("Not implimented")
+        self.load_level()
+        self.waiting_to_start = True
+        
+        # Load new level
+        self.load_level()
+        
+        self.kills = 0
+        self.money = 100
+        self.lives = 20
+        
+        for e in self.enemies: self.remove_enemy(e)
+        for r in self.runes: self.remove_rune(r)
+        for s in self.shots: self.remove_shot(s)
+        
+        # Update based on money
+        self.money_display.text = "%s gold" % len(self.runes)
+        self.next_wave()
+    
+    def sell_all(self):
+        """docstring for sell_all"""
         pass
     
     def handle_mouseup(self, event):
@@ -285,7 +345,7 @@ class RuneGame (engine.EngineV2):
         y /= 35
         
         try:
-            self.add_rune("Pink", (x,y))
+            self.add_rune(self.selected_rune, (x,y))
         except engine.Illegal_move as e:
             pass
         except KeyError as e:
