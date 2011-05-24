@@ -272,7 +272,6 @@ class RuneGame (engine.EngineV2):
             current_wave = self.level_data['waves'][self.wave]
         
         for group in current_wave:
-            print(group)
             for i in range(group['count']):
                 self.enemy_queue.append((group['enemy'], group['delay']))
     
