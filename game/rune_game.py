@@ -50,7 +50,10 @@ class RuneGame (engine.EngineV2):
             "Green rune": pygame.image.load('media/green_rune.png'),
             
             # Bullets
-            "PinkBullet": pygame.image.load('media/bullet.png'),
+            "Pink bullet": pygame.image.load('media/pink_bullet.png'),
+            "Blue bullet": pygame.image.load('media/blue_bullet.png'),
+            "Yellow bullet": pygame.image.load('media/yellow_bullet.png'),
+            "Green bullet": pygame.image.load('media/green_bullet.png'),
         }
         
         self.rune_types = {
@@ -166,8 +169,10 @@ class RuneGame (engine.EngineV2):
         if time.time() > self.queue_pause_till:
             self.waiting_to_start = False
             if len(self.enemy_queue) > 0:
-                self.add_enemy(self.enemy_queue.pop(0))
-                self.queue_pause_till = time.time() + 0.15
+                e, delay_time = self.enemy_queue.pop(0)
+                
+                self.add_enemy(e)
+                self.queue_pause_till = time.time() + delay_time
         
         for e in self.enemies:
             if tuple(e.position) == e.target:
@@ -267,8 +272,9 @@ class RuneGame (engine.EngineV2):
             current_wave = self.level_data['waves'][self.wave]
         
         for group in current_wave:
+            print(group)
             for i in range(group['count']):
-                self.enemy_queue.append(group['enemy'])
+                self.enemy_queue.append((group['enemy'], group['delay']))
     
     def complete_level(self):
         raise Exception("Not implimented")
