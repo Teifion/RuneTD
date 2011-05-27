@@ -24,6 +24,11 @@
         ],
         "waves": [
             [
+                {"enemy":"Red triangle", "count":1, "delay":0.2}
+            ]
+        ],
+        "waves2": [
+            [
                 {"enemy":"Red triangle", "count":20, "delay":0.2}
             ],
             [
@@ -69,11 +74,16 @@
         ],
         "waves": [
             [
-                {"enemy":"Red triangle", "count":20}
+                {"enemy":"Blue circle", "count":20, "delay":0.25}
             ],
-            
             [
-                {"enemy":"Red triangle", "count":40}
+                {"enemy":"Blue circle", "count":20, "delay":0.25},
+                {"enemy":"Pink square", "count":20, "delay":0.3}
+            ],
+            [
+                {"enemy":"Blue circle", "count":20, "delay":0.25},
+                {"enemy":"Pink square", "count":20, "delay":0.3},
+                {"enemy":"Orange octagon", "count":20, "delay":0.4}
             ]
         ],
         "reward": 10
