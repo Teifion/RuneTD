@@ -101,9 +101,9 @@ class RuneGame (engine.EngineV2):
         self.money = 100
         self.lives = 20
         
-        for e in self.enemies: self.remove_enemy(e)
-        for r in self.runes: self.remove_rune(r)
-        for s in self.shots: self.remove_shot(s)
+        for e in self.enemies[:]: self.remove_enemy(e)
+        for r in self.runes[:]: self.remove_rune(r)
+        for s in self.shots[:]: self.remove_shot(s)
         
         # Update based on money
         self.money_display.text = "%s gold" % len(self.runes)
@@ -264,8 +264,10 @@ class RuneGame (engine.EngineV2):
             self.next_wave()
     
     def remove_rune(self, rune):
-        self.sprites.remove(enemy)
-        self.runes.remove(enemy)
+        self.sprites.remove(rune)
+        self.runes.remove(rune)
+        
+        rune.remove()
         self.runes_on_screen.text = "%s runes" % len(self.runes)
     
     def add_rune(self, rune_name, position):
@@ -294,18 +296,34 @@ class RuneGame (engine.EngineV2):
         self.sprites.add(shot)
     
     def remove_shot(self, shot):
-        self.shots.remove(shot)
-        self.sprites.remove(shot)
+        try:
+            self.shots.remove(shot)
+            self.sprites.remove(shot)
+            shot.remove()
+        except Exception as e:
+            pass
     
     def next_wave(self):
-        self.waiting_to_start = True
         self.wave += 1
-        self.queue_pause_till = time.time() + 3
         
         # Feed the next wave into the queue
         if self.wave >= len(self.level_data['waves']):
-            self.complete_level()
+            if not self.waiting_to_start:
+                self.waiting_to_start = True
+                
+                self.complete_level()
+                self.queue_pause_till = time.time() + 3
+                
+                current_wave = self.level_data['waves'][self.wave]
+                
+                for group in current_wave:
+                    for i in range(group['count']):
+                        self.enemy_queue.append((group['enemy'], group['delay']))
+        
         else:
+            self.waiting_to_start = True
+            self.queue_pause_till = time.time() + 3
+            
             # Give reward
             self.money += self.level_data['reward']
             self.money_display.text = "%s gold" % self.money
@@ -317,23 +335,16 @@ class RuneGame (engine.EngineV2):
                     self.enemy_queue.append((group['enemy'], group['delay']))
     
     def complete_level(self):
-        self.load_level()
-        self.waiting_to_start = True
-        
-        # Load new level
-        self.load_level()
-        
         self.kills = 0
         self.money = 100
         self.lives = 20
         
-        for e in self.enemies: self.remove_enemy(e)
-        for r in self.runes: self.remove_rune(r)
-        for s in self.shots: self.remove_shot(s)
+        for e in self.enemies[:]: self.remove_enemy(e)
+        for r in self.runes[:]: self.remove_rune(r)
+        for s in self.shots[:]: self.remove_shot(s)
         
-        # Update based on money
-        self.money_display.text = "%s gold" % len(self.runes)
-        self.next_wave()
+        # Load new level
+        self.load_level()
     
     def sell_all(self):
         """docstring for sell_all"""
