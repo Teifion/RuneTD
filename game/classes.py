@@ -164,6 +164,14 @@ def make_vector(angle, distance):
     
     return opp, -adj
 
+def distance(pos1, pos2):
+    x = abs(pos1[0] - pos2[0])
+    y = abs(pos1[1] - pos2[1])
+    
+    d = math.sqrt(x*x + y*y)
+    
+    return d
+
 class Bullet (pygame.sprite.Sprite):
     damage = 0
     move_speed = 0
@@ -184,6 +192,8 @@ class Bullet (pygame.sprite.Sprite):
         self.game = game
         self.seeking = False
         
+        self.age = 0
+        
         if type(target) == list or type(target) == tuple:
             self.sprite_target = None
             self.target = target
@@ -194,24 +204,17 @@ class Bullet (pygame.sprite.Sprite):
     
     def update(self, current_time):
         if self.next_update_time < current_time or True:
+            
             if self.sprite_target != None:
                 self.target = self.sprite_target.position
             
-            x,y = make_vector(angle_to_target(self.position, self.target), self.move_speed)
+            x,y = make_vector(
+                angle_to_target(self.position, self.target),
+                min(self.move_speed, distance(self.position, self.target))
+            )
             
             self.position[0] += x
             self.position[1] += y
-            
-            
-            # if self.position[0] < self.target[0]:
-            #     self.position[0] = min(self.position[0] + self.move_speed, self.target[0])
-            # elif self.position[0] > self.target[0]:
-            #     self.position[0] = max(self.position[0] - self.move_speed, self.target[0])
-            # 
-            # if self.position[1] < self.target[1]:
-            #     self.position[1] = min(self.position[1] + self.move_speed, self.target[1])
-            # elif self.position[1] > self.target[1]:
-            #     self.position[1] = max(self.position[1] - self.move_speed, self.target[1])
             
             if self.distance() < 0.2:
                 self.hit()
