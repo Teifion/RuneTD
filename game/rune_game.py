@@ -58,10 +58,10 @@ class RuneGame (engine.EngineV2):
         }
         
         self.rune_types = {
-            "Pink":     runes.PinkRune,
-            "Blue":     runes.BlueRune,
-            "Yellow":   runes.YellowRune,
-            "Green":    runes.GreenRune,
+            "Basic":    runes.BasicRune,
+            "Slow":     runes.SlowRune,
+            "Splash":   runes.SplashRune,
+            "Poison":   runes.PoisonRune,
         }
         
         self.enemy_types = {
@@ -92,7 +92,7 @@ class RuneGame (engine.EngineV2):
         self.waiting_to_start = False
     
     def new_game(self):
-        self.select_rune_type(rune="Pink")
+        self.select_rune_type(rune="Basic")
         
         # Load new level
         self.load_level()
@@ -122,29 +122,29 @@ class RuneGame (engine.EngineV2):
         self.status_display = engine.Text_display((800, self.window_height-20), "In progress")
         
         # Rune selection buttons
-        self.pink_rune_button   = engine.Button((self.window_width - self.menu_width + 5, 15), self.resources['Pink rune'])
-        self.pink_rune_button.button_up = self.select_rune_type
-        self.pink_rune_button.button_up_kwargs = {"rune":"Pink"}
-        self.add_button(self.pink_rune_button)
-        self.pink_rune_text     = engine.Text_display((self.window_width - self.menu_width + 5, 50), "Basic rune", colour=(255,255,255))
+        self.basic_rune_button   = engine.Button((self.window_width - self.menu_width + 5, 15), self.resources['Pink rune'])
+        self.basic_rune_button.button_up = self.select_rune_type
+        self.basic_rune_button.button_up_kwargs = {"rune":"Basic"}
+        self.add_button(self.basic_rune_button)
+        self.basic_rune_text     = engine.Text_display((self.window_width - self.menu_width + 5, 50), "Basic rune", colour=(255,255,255))
         
-        self.blue_rune_button   = engine.Button((self.window_width - self.menu_width + 5, 90), self.resources['Blue rune'])
-        self.blue_rune_button.button_up = self.select_rune_type
-        self.blue_rune_button.button_up_kwargs = {"rune":"Blue"}
-        self.add_button(self.blue_rune_button)
-        self.blue_rune_text     = engine.Text_display((self.window_width - self.menu_width + 5, 125), "Slow rune", colour=(255,255,255))
+        self.slow_rune_button   = engine.Button((self.window_width - self.menu_width + 5, 90), self.resources['Blue rune'])
+        self.slow_rune_button.button_up = self.select_rune_type
+        self.slow_rune_button.button_up_kwargs = {"rune":"Slow"}
+        self.add_button(self.slow_rune_button)
+        self.slow_rune_text     = engine.Text_display((self.window_width - self.menu_width + 5, 125), "Slow rune", colour=(255,255,255))
         
-        self.yellow_rune_button = engine.Button((self.window_width - self.menu_width + 5, 165), self.resources['Yellow rune'])
-        self.yellow_rune_button.button_up = self.select_rune_type
-        self.yellow_rune_button.button_up_kwargs = {"rune":"Yellow"}
-        self.add_button(self.yellow_rune_button)
-        self.yellow_rune_text   = engine.Text_display((self.window_width - self.menu_width + 5, 200), "Splash rune", colour=(255,255,255))
+        self.splash_rune_button = engine.Button((self.window_width - self.menu_width + 5, 165), self.resources['Yellow rune'])
+        self.splash_rune_button.button_up = self.select_rune_type
+        self.splash_rune_button.button_up_kwargs = {"rune":"Splash"}
+        self.add_button(self.splash_rune_button)
+        self.splash_rune_text   = engine.Text_display((self.window_width - self.menu_width + 5, 200), "Splash rune", colour=(255,255,255))
         
-        self.green_rune_button  = engine.Button((self.window_width - self.menu_width + 5, 240), self.resources['Green rune'])
-        self.green_rune_button.button_up = self.select_rune_type
-        self.green_rune_button.button_up_kwargs = {"rune":"Green"}
-        self.add_button(self.green_rune_button)
-        self.green_rune_text    = engine.Text_display((self.window_width - self.menu_width + 5, 275), "Poison rune", colour=(255,255,255))
+        self.poison_rune_button  = engine.Button((self.window_width - self.menu_width + 5, 240), self.resources['Green rune'])
+        self.poison_rune_button.button_up = self.select_rune_type
+        self.poison_rune_button.button_up_kwargs = {"rune":"Poison"}
+        self.add_button(self.poison_rune_button)
+        self.poison_rune_text    = engine.Text_display((self.window_width - self.menu_width + 5, 275), "Poison rune", colour=(255,255,255))
         
         # The 'button' that shows which rune we've selected
         self.rune_selector = engine.Button((100, 100), self.resources['selector'])
@@ -159,17 +159,17 @@ class RuneGame (engine.EngineV2):
         self.sprites.add(self.status_display)
         
         # Rune menu at the right
-        self.sprites.add(self.pink_rune_button)
-        self.sprites.add(self.pink_rune_text)
+        self.sprites.add(self.basic_rune_button)
+        self.sprites.add(self.basic_rune_text)
         
-        self.sprites.add(self.blue_rune_button)
-        self.sprites.add(self.blue_rune_text)
+        self.sprites.add(self.slow_rune_button)
+        self.sprites.add(self.slow_rune_text)
         
-        self.sprites.add(self.yellow_rune_button)
-        self.sprites.add(self.yellow_rune_text)
+        self.sprites.add(self.splash_rune_button)
+        self.sprites.add(self.splash_rune_text)
         
-        self.sprites.add(self.green_rune_button)
-        self.sprites.add(self.green_rune_text)
+        self.sprites.add(self.poison_rune_button)
+        self.sprites.add(self.poison_rune_text)
         
         # Start the new game
         self.new_game()
@@ -183,14 +183,14 @@ class RuneGame (engine.EngineV2):
     def select_rune_type(self, rune):
         self.selected_rune = rune
         
-        if rune == "Pink":
-            x, y = self.pink_rune_button.rect.left, self.pink_rune_button.rect.top
-        elif rune == "Blue":
-            x, y = self.blue_rune_button.rect.left, self.blue_rune_button.rect.top
-        elif rune == "Green":
-            x, y = self.green_rune_button.rect.left, self.green_rune_button.rect.top
-        elif rune == "Yellow":
-            x, y = self.yellow_rune_button.rect.left, self.yellow_rune_button.rect.top
+        if rune == "Basic":
+            x, y = self.basic_rune_button.rect.left, self.basic_rune_button.rect.top
+        elif rune == "Slow":
+            x, y = self.slow_rune_button.rect.left, self.slow_rune_button.rect.top
+        elif rune == "Poison":
+            x, y = self.poison_rune_button.rect.left, self.poison_rune_button.rect.top
+        elif rune == "Splash":
+            x, y = self.splash_rune_button.rect.left, self.splash_rune_button.rect.top
         
         self.rune_selector.rect.left = x-3
         self.rune_selector.rect.top = y-3
@@ -412,6 +412,8 @@ class RuneGame (engine.EngineV2):
     def build_pathway(self):
         """
         Builds a pathway through the maze so that enemies know where to go.
+        It is very easy to trick the algorithm, some level designs may result
+        in very stupid pathfinding
         """
         def distance(pos1, pos2):
             x = abs(pos1[0] - pos2[0])
@@ -518,7 +520,6 @@ class RuneGame (engine.EngineV2):
                 
                 jumped = True
                 step_count = len(steps)
-        
         
         # We now have a list of steps taken
         self.pathway = {}
