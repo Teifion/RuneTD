@@ -192,8 +192,6 @@ class Bullet (pygame.sprite.Sprite):
         self.game = game
         self.seeking = False
         
-        self.age = 0
-        
         if type(target) == list or type(target) == tuple:
             self.sprite_target = None
             self.target = target
