@@ -112,6 +112,57 @@ class Rune (pygame.sprite.Sprite):
         y = abs(self.position[1] - enemy.position[1])
         return math.sqrt(x*x + y*y)
 
+def angle_to_target(pos1, pos2):
+    """
+    pos1 and pos2 are both length 2 lists/tuples
+    returned is the angle from pos1 to pos2
+    returns in degrees
+    """
+    # SOH CAH TOA
+    # We have the opposite and adjacent
+    x = abs(pos1[0] - pos2[0])
+    y = abs(pos1[1] - pos2[1])
+    
+    # Exacts, because in these cases we get a divide by 0 error
+    if x == 0:
+        if pos1[1] >= pos2[1]:# Up
+            xy = 0
+        elif pos1[1] < pos2[1]:# Down
+            xy = 180
+    elif y == 0:
+        if pos1[0] <= pos2[0]:# Right
+            xy = 90
+        elif pos1[0] > pos2[0]:# Left
+            xy = 270
+    else:
+        # Using trig
+        if pos1[1] > pos2[1]:# Up
+            if pos1[0] < pos2[0]:# Right
+                xy = math.degrees(math.atan(x/y))
+            else:# Left
+                xy = math.degrees(math.atan(y/x)) + 270
+        else:# Down
+            if pos1[0] < pos2[0]:# Right
+                xy = math.degrees(math.atan(y/x)) + 90
+            else:# Left
+                xy = math.degrees(math.atan(x/y)) + 180
+    
+    return xy
+
+def make_vector(angle, distance):
+    """
+    distance is the 2D line going from origin at "angle"
+    """
+    
+    if angle == 0:      return 0, -distance
+    if angle == 90:     return distance, 0
+    if angle == 180:    return 0, distance
+    if angle == 270:    return -distance, 0
+    
+    opp = math.sin(math.radians(angle)) * distance
+    adj = math.cos(math.radians(angle)) * distance
+    
+    return opp, -adj
 
 class Bullet (pygame.sprite.Sprite):
     damage = 0
@@ -146,15 +197,21 @@ class Bullet (pygame.sprite.Sprite):
             if self.sprite_target != None:
                 self.target = self.sprite_target.position
             
-            if self.position[0] < self.target[0]:
-                self.position[0] = min(self.position[0] + self.move_speed, self.target[0])
-            elif self.position[0] > self.target[0]:
-                self.position[0] = max(self.position[0] - self.move_speed, self.target[0])
+            x,y = make_vector(angle_to_target(self.position, self.target), self.move_speed)
             
-            if self.position[1] < self.target[1]:
-                self.position[1] = min(self.position[1] + self.move_speed, self.target[1])
-            elif self.position[1] > self.target[1]:
-                self.position[1] = max(self.position[1] - self.move_speed, self.target[1])
+            self.position[0] += x
+            self.position[1] += y
+            
+            
+            # if self.position[0] < self.target[0]:
+            #     self.position[0] = min(self.position[0] + self.move_speed, self.target[0])
+            # elif self.position[0] > self.target[0]:
+            #     self.position[0] = max(self.position[0] - self.move_speed, self.target[0])
+            # 
+            # if self.position[1] < self.target[1]:
+            #     self.position[1] = min(self.position[1] + self.move_speed, self.target[1])
+            # elif self.position[1] > self.target[1]:
+            #     self.position[1] = max(self.position[1] - self.move_speed, self.target[1])
             
             if self.distance() < 0.2:
                 self.hit()
