@@ -196,6 +196,7 @@ def distance(pos1, pos2):
 class Bullet (pygame.sprite.Sprite):
     damage = 0
     move_speed = 0
+    seeking = True
     
     def __init__(self, game, position, target):
         pygame.sprite.Sprite.__init__(self)
@@ -211,19 +212,23 @@ class Bullet (pygame.sprite.Sprite):
         self.offset = game.tile_size/2 - self.rect.width/2
         
         self.game = game
-        self.seeking = False
         
         if type(target) == list or type(target) == tuple:
             self.sprite_target = None
             self.target = target
         else:
-            target.chasers.append(self)
-            self.sprite_target = target
-            self.target = target.position
+            if self.seeking:
+                target.chasers.append(self)
+                self.sprite_target = target
+                self.target = target.position
+            else:
+                self.sprite_target = None
+                self.target = target.position[:]
+                # We need to make a duplicate list so that we don't change
+                # target as the enemy moves
     
     def update(self, current_time):
         if self.next_update_time < current_time or True:
-            
             if self.sprite_target != None:
                 self.target = self.sprite_target.position
             
