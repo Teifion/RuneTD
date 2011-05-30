@@ -1,7 +1,7 @@
 from game import classes
 
 class StandardBullet (classes.Bullet):
-    move_speed = 0.5
+    move_speed = 0.4
     damage = 2
     
     def __init__(self, game, position, target):
@@ -12,8 +12,8 @@ class StandardBullet (classes.Bullet):
         pass
 
 class SlowBullet (classes.Bullet):
-    move_speed = 0.5
-    damage = 1
+    move_speed = 0.7
+    damage = 0.1
     
     def __init__(self, game, position, target):
         super(SlowBullet, self).__init__(game, position, target)
@@ -23,9 +23,10 @@ class SlowBullet (classes.Bullet):
         self.sprite_target.slowed = 50
 
 class SplashBullet (classes.Bullet):
-    move_speed = 0.5
+    move_speed = 0.25
     damage = 1
-    splash_range = 10
+    splash_range = 7
+    seeking = False
     
     def __init__(self, game, position, target):
         super(SplashBullet, self).__init__(game, position, target)
@@ -49,7 +50,7 @@ class SplashBullet (classes.Bullet):
 
 
 class PoisonBullet (classes.Bullet):
-    move_speed = 0.5
+    move_speed = 0.7
     damage = 0
     
     def __init__(self, game, position, target):
