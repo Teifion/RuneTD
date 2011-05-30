@@ -406,6 +406,8 @@ class RuneGame (engine.EngineV2):
         # Sets the background in such a way the sprites refresh correctly
         self.background = self.background.copy()
         
+        self.screen.blit(self.background, pygame.Rect(0, 0, self.window_width, self.window_height))
+        
         # Now to pathfind
         self.build_pathway()
     
