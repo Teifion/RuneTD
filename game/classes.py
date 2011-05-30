@@ -17,6 +17,8 @@ class Enemy (pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = (-100, -100)# Start offscreen
         
+        self.game = game
+        
         self.next_update_time = 0 # update() hasn't been called yet.
         
         self.position = list(game.start_tile)
@@ -25,6 +27,8 @@ class Enemy (pygame.sprite.Sprite):
         self.offset = game.tile_size/2 - game.enemy_size/2
         
         self.chasers = []
+        self.slowed = 0
+        self.poisoned = 0
         self.disabled = False
         
         # This has to be set by the sub_class
@@ -33,21 +37,38 @@ class Enemy (pygame.sprite.Sprite):
     def update(self, current_time):
         if self.disabled: return
         
+        real_move_speed = self.move_speed
+        
+        if self.slowed > 0:
+            real_move_speed /= 2
+            self.slowed -= 1
+        
+        if self.poisoned > 0:
+            self.hp -= 0.1
+            if self.hp <= 0:
+                self.kill()
+            self.poisoned -= 1
+        
         if self.next_update_time < current_time or True:
             if self.position[0] < self.target[0]:
-                self.position[0] = min(self.position[0] + self.move_speed, self.target[0])
+                self.position[0] = min(self.position[0] + real_move_speed, self.target[0])
             elif self.position[0] > self.target[0]:
-                self.position[0] = max(self.position[0] - self.move_speed, self.target[0])
+                self.position[0] = max(self.position[0] - real_move_speed, self.target[0])
             
             if self.position[1] < self.target[1]:
-                self.position[1] = min(self.position[1] + self.move_speed, self.target[1])
+                self.position[1] = min(self.position[1] + real_move_speed, self.target[1])
             elif self.position[1] > self.target[1]:
-                self.position[1] = max(self.position[1] - self.move_speed, self.target[1])
+                self.position[1] = max(self.position[1] - real_move_speed, self.target[1])
             
             self.rect.left = self.position[0] * 35 + self.offset
             self.rect.top = self.position[1] * 35 + self.offset
             
             self.next_update_time = current_time + update_speed
+    
+    def kill(self):
+        self.game.kills += 1
+        self.game.kill_display.text = "%s kill%s" % (self.game.kills, "" if self.game.kills == 1 else "s")
+        self.game.remove_enemy(self)
 
 class Rune (pygame.sprite.Sprite):
     cost = 1
@@ -214,7 +235,7 @@ class Bullet (pygame.sprite.Sprite):
             self.position[0] += x
             self.position[1] += y
             
-            if self.distance() < 0.2:
+            if self.distance(self.target) < 0.2:
                 self.hit()
             
             self.rect.left = self.position[0] * 35 + self.offset
@@ -222,18 +243,22 @@ class Bullet (pygame.sprite.Sprite):
             
             self.next_update_time = current_time + update_speed
     
-    def distance(self):
-        x = abs(self.position[0] - self.target[0])
-        y = abs(self.position[1] - self.target[1])
+    def distance(self, target):
+        x = abs(self.position[0] - target[0])
+        y = abs(self.position[1] - target[1])
         return math.sqrt(x*x + y*y)    
     
+    def apply_effects(self):
+        pass
+    
     def hit(self):
+        self.apply_effects()
+        
         if self.sprite_target != None:
             self.sprite_target.hp -= self.damage
             
             if self.sprite_target.hp <= 0:
-                self.game.remove_enemy(self.sprite_target)
-                self.game.kills += 1
-                self.game.kill_display.text = "%s kill%s" % (self.game.kills, "" if self.game.kills == 1 else "s")
+                self.sprite_target.kill()
         
         self.game.remove_shot(self)
+    
