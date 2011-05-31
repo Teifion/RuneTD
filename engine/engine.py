@@ -77,7 +77,7 @@ class EngineV2 (object):
         rectlist = self.sprites.draw(self.screen)
         pygame.display.update(rectlist)
         pygame.time.delay(10)
-        
+        pygame.display.flip()
         self.sprites.clear(self.screen, self.background)
 
     
