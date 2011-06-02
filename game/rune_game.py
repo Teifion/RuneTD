@@ -176,7 +176,7 @@ class RuneGame (engine.EngineV2):
         
         self.enemies_on_screen.text = "%s %s" % (len(self.enemies), "enemy" if len(self.enemies) == 1 else "enemies")
         self.runes_on_screen.text = "%s runes" % len(self.runes)
-        self.money_display.text = "%s gold" % self.money
+        self.money_display.text = "%d gold" % self.money
         self.kill_display.text = "%s kill%s" % (self.kills, "" if self.kills == 1 else "s")
         self.lives_display.text = "%s %s" % (self.lives, "life" if self.lives == 1 else "lives")
     
@@ -253,7 +253,7 @@ class RuneGame (engine.EngineV2):
         
         # Give reward
         self.money += enemy.reward
-        self.money_display.text = "%s gold" % self.money
+        self.money_display.text = "%d gold" % self.money
         
         self.sprites.remove(enemy)
         self.enemies.remove(enemy)
@@ -270,6 +270,21 @@ class RuneGame (engine.EngineV2):
         rune.remove()
         self.runes_on_screen.text = "%s runes" % len(self.runes)
     
+    def sell_rune(self, position):
+        the_rune = None
+        
+        for r in self.runes:
+            if r.position == list(position):
+                the_rune = r
+        
+        if not r:
+            raise engine.Illegal_move("Cannot sell an empty tile")
+        
+        self.money += math.floor(the_rune.cost/2.0)
+        self.money_display.text = "%d gold" % self.money
+        
+        self.remove_rune(the_rune)
+    
     def add_rune(self, rune_name, position):
         rune_type = self.rune_types[rune_name]
         new_rune = rune_type(self, position)
@@ -285,7 +300,7 @@ class RuneGame (engine.EngineV2):
                 raise engine.Illegal_move("Can only place a rune on top of another rune")
         
         self.money -= new_rune.cost
-        self.money_display.text = "%s gold" % self.money
+        self.money_display.text = "%d gold" % self.money
         
         self.runes.append(new_rune)
         self.sprites.add(new_rune)
@@ -326,7 +341,7 @@ class RuneGame (engine.EngineV2):
             
             # Give reward
             self.money += self.level_data['reward']
-            self.money_display.text = "%s gold" % self.money
+            self.money_display.text = "%d gold" % self.money
             
             current_wave = self.level_data['waves'][self.wave]
             
@@ -355,13 +370,30 @@ class RuneGame (engine.EngineV2):
         x /= 35
         y /= 35
         
-        try:
-            self.add_rune(self.selected_rune, (x,y))
-        except engine.Illegal_move as e:
-            pass
-        except KeyError as e:
-            # Tried clicking outside of the tiles
-            pass
+        if event.button == 1:
+            try:
+                self.add_rune(self.selected_rune, (x,y))
+            except engine.Illegal_move as e:
+                pass
+            except KeyError as e:
+                # Tried clicking outside of the tiles
+                pass
+            
+        elif event.button == 3:
+            try:
+                self.sell_rune((x,y))
+            except engine.Illegal_move as e:
+                pass
+            except KeyError as e:
+                # Tried clicking outside of the tiles
+                pass
+    
+    def handle_mousemotion(self, event):
+        x, y = event.pos
+        x /= 35
+        y /= 35
+        
+        # print(x, y)
     
     def load_level(self):
         # Reset level counters
