@@ -198,12 +198,19 @@ class Text_display (pygame.sprite.Sprite):
         self.text = text
         self._last_text = ""
         
+        self.image = pygame.Surface(self.font.size(self.text))
+        self.rect = self.image.get_rect()
+        
         self.bold = False
         self.italic = False
     
     def update(self, *args, **kwargs):
         if self._last_text != self.text:
             self._last_text = self.text
+            
+            if self.text == "":
+                self.rect = pygame.Rect(-1, -1, 0, 0)
+                return
             
             self.image = pygame.Surface(self.font.size(self.text))
             self.rect = self.image.get_rect()
