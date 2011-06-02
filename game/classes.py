@@ -96,6 +96,8 @@ class Rune (pygame.sprite.Sprite):
         self.target = None
         self.game = game
         self.disabled = False
+        
+        self.effects = []
     
     def update(self, current_time):
         if self.disabled: return

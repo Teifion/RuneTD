@@ -146,6 +146,13 @@ class RuneGame (engine.EngineV2):
         self.add_button(self.poison_rune_button)
         self.poison_rune_text    = engine.Text_display((self.window_width - self.menu_width + 5, 275), "Poison rune", colour=(255,255,255))
         
+        # Rune info text
+        self.rune_info_text = []
+        
+        for i in range(3):
+            t = engine.Text_display((self.window_width - self.menu_width + 5, self.window_height - 95 + (i * 25)), "", colour=(255,255,255))
+            self.rune_info_text.append(t)
+                
         # The 'button' that shows which rune we've selected
         self.rune_selector = engine.Button((100, 100), self.resources['selector'])
         self.sprites.add(self.rune_selector)
@@ -157,6 +164,9 @@ class RuneGame (engine.EngineV2):
         self.sprites.add(self.kill_display)
         self.sprites.add(self.lives_display)
         self.sprites.add(self.status_display)
+        
+        for t in self.rune_info_text:
+            self.sprites.add(t)
         
         # Rune menu at the right
         self.sprites.add(self.basic_rune_button)
@@ -170,6 +180,9 @@ class RuneGame (engine.EngineV2):
         
         self.sprites.add(self.poison_rune_button)
         self.sprites.add(self.poison_rune_text)
+        
+        # Information on the last x/y of the mouse
+        self.last_mouse_pos = (-1, -1)
         
         # Start the new game
         self.new_game()
@@ -393,7 +406,25 @@ class RuneGame (engine.EngineV2):
         x /= 35
         y /= 35
         
-        # print(x, y)
+        if (x,y) != self.last_mouse_pos:
+            self.last_mouse_pos = (x,y)
+            
+            the_rune = None
+            
+            for r in self.runes:
+                if r.position == [x,y]:
+                    the_rune = r
+                    break
+            
+            if the_rune == None:
+                for t in self.rune_info_text:
+                    t.text = ""
+                return
+            
+            self.rune_info_text[0].text = str(the_rune.__class__)
+            self.rune_info_text[1].text = str(the_rune.effects)
+            
+            
     
     def load_level(self):
         # Reset level counters
