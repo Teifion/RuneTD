@@ -15,6 +15,19 @@ class SlowRune (classes.Rune):
     
     image_name = 'Blue rune'
     shot_type = shots.SlowBullet
+    
+    def shoot(self):
+        """Overriden to force finding of the least slowed target within range"""
+        best_target = (None, 99999999)
+        
+        for e in self.game.enemies:
+            if self.distance(e) <= self.shot_range:
+                if e.slowed < best_target[1]:
+                    best_target = (e, e.slowed)
+        
+        self.target = best_target[0]
+        
+        return super(SlowRune, self).shoot()
 
 class SplashRune (classes.Rune):
     cost = 10
