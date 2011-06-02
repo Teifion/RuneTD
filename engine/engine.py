@@ -209,7 +209,7 @@ class Text_display (pygame.sprite.Sprite):
             self._last_text = self.text
             
             if self.text == "":
-                self.rect = pygame.Rect(-1, -1, 0, 0)
+                self.rect = pygame.Rect(-100, -100, 0, 0)
                 return
             
             self.image = pygame.Surface(self.font.size(self.text))
