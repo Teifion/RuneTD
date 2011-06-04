@@ -14,10 +14,10 @@ class RuneGame (engine.EngineV2):
     
     fps = 40
     
-    menu_width = 120
+    menu_width = 470
     
-    window_width = 30*tile_size + menu_width
-    window_height = 20*tile_size + 20
+    window_width = 20 * tile_size + menu_width
+    window_height = 20 * tile_size + 20
     
     enemy_size = 15
     rune_size = 30
