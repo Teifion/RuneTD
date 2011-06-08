@@ -4,8 +4,8 @@ class StandardBullet (classes.Bullet):
     move_speed = 0.4
     damage = 2
     
-    def __init__(self, game, position, target):
-        super(StandardBullet, self).__init__(game, position, target)
+    def __init__(self, game, position, target, rune=None):
+        super(StandardBullet, self).__init__(game, position, target, rune)
         self.image = game.resources['Pink bullet']
     
     def apply_effects(self):
@@ -15,8 +15,8 @@ class SlowBullet (classes.Bullet):
     move_speed = 0.7
     damage = 0.1
     
-    def __init__(self, game, position, target):
-        super(SlowBullet, self).__init__(game, position, target)
+    def __init__(self, game, position, target, rune=None):
+        super(SlowBullet, self).__init__(game, position, target, rune)
         self.image = game.resources['Blue bullet']
     
     def apply_effects(self):
@@ -28,8 +28,8 @@ class SplashBullet (classes.Bullet):
     splash_range = 7
     seeking = False
     
-    def __init__(self, game, position, target):
-        super(SplashBullet, self).__init__(game, position, target)
+    def __init__(self, game, position, target, rune=None):
+        super(SplashBullet, self).__init__(game, position, target, rune)
         self.image = game.resources['Yellow bullet']
         
         # Not seeking, it'll hit and explode
@@ -53,8 +53,8 @@ class PoisonBullet (classes.Bullet):
     move_speed = 0.7
     damage = 0
     
-    def __init__(self, game, position, target):
-        super(PoisonBullet, self).__init__(game, position, target)
+    def __init__(self, game, position, target, rune=None):
+        super(PoisonBullet, self).__init__(game, position, target, rune)
         self.image = game.resources['Green bullet']
     
     def apply_effects(self):

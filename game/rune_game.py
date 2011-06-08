@@ -127,24 +127,28 @@ class RuneGame (engine.EngineV2):
         self.basic_rune_button.button_up_kwargs = {"rune":"Basic"}
         self.add_button(self.basic_rune_button)
         self.basic_rune_text     = engine.Text_display((self.window_width - self.menu_width + 5, 50), "Basic rune", colour=(255,255,255))
+        self.basic_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 70), "Cost: 10, Effect: +1 damage", font_size=14, colour=(255,255,255))
         
         self.slow_rune_button   = engine.Button((self.window_width - self.menu_width + 5, 90), self.resources['Blue rune'])
         self.slow_rune_button.button_up = self.select_rune_type
         self.slow_rune_button.button_up_kwargs = {"rune":"Slow"}
         self.add_button(self.slow_rune_button)
         self.slow_rune_text     = engine.Text_display((self.window_width - self.menu_width + 5, 125), "Slow rune", colour=(255,255,255))
+        self.slow_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 145), "Cost: 10, Effect: +1 range", font_size=14, colour=(255,255,255))
         
         self.splash_rune_button = engine.Button((self.window_width - self.menu_width + 5, 165), self.resources['Yellow rune'])
         self.splash_rune_button.button_up = self.select_rune_type
         self.splash_rune_button.button_up_kwargs = {"rune":"Splash"}
         self.add_button(self.splash_rune_button)
         self.splash_rune_text   = engine.Text_display((self.window_width - self.menu_width + 5, 200), "Splash rune", colour=(255,255,255))
+        self.splash_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 220), "Cost: 10, Effect: +10% rate of fire", font_size=14, colour=(255,255,255))
         
         self.poison_rune_button  = engine.Button((self.window_width - self.menu_width + 5, 240), self.resources['Green rune'])
         self.poison_rune_button.button_up = self.select_rune_type
         self.poison_rune_button.button_up_kwargs = {"rune":"Poison"}
         self.add_button(self.poison_rune_button)
         self.poison_rune_text    = engine.Text_display((self.window_width - self.menu_width + 5, 275), "Poison rune", colour=(255,255,255))
+        self.poison_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 295), "Cost: 10, Effect: -1 Damage, +30% rate of fire", font_size=14, colour=(255,255,255))
         
         # Rune info text
         self.rune_info_text = []
@@ -171,15 +175,19 @@ class RuneGame (engine.EngineV2):
         # Rune menu at the right
         self.sprites.add(self.basic_rune_button)
         self.sprites.add(self.basic_rune_text)
+        self.sprites.add(self.basic_rune_info)
         
         self.sprites.add(self.slow_rune_button)
         self.sprites.add(self.slow_rune_text)
+        self.sprites.add(self.slow_rune_info)
         
         self.sprites.add(self.splash_rune_button)
         self.sprites.add(self.splash_rune_text)
+        self.sprites.add(self.splash_rune_info)
         
         self.sprites.add(self.poison_rune_button)
         self.sprites.add(self.poison_rune_text)
+        self.sprites.add(self.poison_rune_info)
         
         # Information on the last x/y of the mouse
         self.last_mouse_pos = (-1, -1)

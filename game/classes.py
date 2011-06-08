@@ -2,6 +2,7 @@ import pygame
 import random
 
 import math
+import time
 
 # Update every 10 milliseconds = 1/100th of a second
 update_speed = 10
@@ -97,7 +98,14 @@ class Rune (pygame.sprite.Sprite):
         self.game = game
         self.disabled = False
         
-        self.effects = []
+        self.effects = {
+            "damage":       0,
+        }
+        
+        self.age = time.time()
+        
+        for r in self.get_affected_runes():
+            self.apply_effects(r)
     
     def update(self, current_time):
         if self.disabled: return
@@ -125,10 +133,31 @@ class Rune (pygame.sprite.Sprite):
                     break
         
         if self.target != None:
-            s = self.shot_type(self.game, self.position, self.target)
+            s = self.shot_type(self.game, self.position, self.target, rune=self)
             self.game.add_shot(s)
         else:
             pass
+    
+    def remove(self, *args, **kwargs):
+        pygame.sprite.Sprite.remove(self, *args, **kwargs)
+    
+    def get_affected_runes(self):
+        """Returns a list of all runes adjacent and older"""
+        rune_list = []
+        
+        for r in self.game.runes:
+            if abs(r.position[0] - self.position[0]) <= 1:
+                if abs(r.position[1] - self.position[1]) <= 1:
+                    if r.age < self.age:
+                        rune_list.append(r)
+        
+        return rune_list
+    
+    def apply_effects(self, rune):
+        pass
+    
+    def remove_effects(self, rune):
+        pass
     
     def distance(self, enemy):
         x = abs(self.position[0] - enemy.position[0])
@@ -200,7 +229,7 @@ class Bullet (pygame.sprite.Sprite):
     move_speed = 0
     seeking = True
     
-    def __init__(self, game, position, target):
+    def __init__(self, game, position, target, rune = None):
         pygame.sprite.Sprite.__init__(self)
         # Image is set by subclass
         self.image = pygame.Surface([8, 8])
@@ -214,6 +243,12 @@ class Bullet (pygame.sprite.Sprite):
         self.offset = game.tile_size/2 - self.rect.width/2
         
         self.game = game
+        
+        # If we have a rune then it may be we need to add some effects
+        if rune != None:
+            if "damage" in rune.effects:
+                self.damage += rune.effects['damage']
+        
         
         if type(target) == list or type(target) == tuple:
             self.sprite_target = None
