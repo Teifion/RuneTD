@@ -101,3 +101,15 @@ class WeakenRune (classes.Rune):
     def remove_effects(self, rune):
         rune.shot_range -= 0.5
     
+    def shoot(self):
+        """Pick a target with the most armour left"""
+        best_target = (None, None)
+        
+        for e in self.game.enemies:
+            if self.distance(e) <= self.shot_range:
+                if best_target[1] == None or e.armour > best_target[1]:
+                    best_target = (e, e.armour)
+        
+        self.target = best_target[0]
+        
+        return super(WeakenRune, self).shoot()
