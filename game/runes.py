@@ -1,7 +1,7 @@
 from game import classes, shots
 
 class BasicRune (classes.Rune):
-    cost = 10
+    cost = 9
     shot_range = 5
     fire_speed = 1000
     
@@ -42,7 +42,7 @@ class SlowRune (classes.Rune):
         rune.shot_range -= 1
 
 class SplashRune (classes.Rune):
-    cost = 10
+    cost = 13
     shot_range = 4
     fire_speed = 1000
     
@@ -56,7 +56,7 @@ class SplashRune (classes.Rune):
         rune.fire_speed *= 1.1
 
 class PoisonRune (classes.Rune):
-    cost = 10
+    cost = 12
     shot_range = 9
     fire_speed = 1000
     
@@ -70,3 +70,34 @@ class PoisonRune (classes.Rune):
     def remove_effects(self, rune):
         rune.effects['damage'] += 1
         rune.fire_speed *= 1.3
+
+class CriticalRune (classes.Rune):
+    cost = 20
+    shot_range = 9
+    fire_speed = 1000
+    
+    image_name = 'Red rune'
+    shot_type = shots.CriticalBullet
+    
+    def apply_effects(self, rune):
+        rune.effects['damage'] += 2
+        rune.fire_speed *= 1.1
+    
+    def remove_effects(self, rune):
+        rune.effects['damage'] -= 2
+        rune.fire_speed /= 1.1
+
+class WeakenRune (classes.Rune):
+    cost = 8
+    shot_range = 9
+    fire_speed = 500
+    
+    image_name = 'Teal rune'
+    shot_type = shots.WeakenBullet
+    
+    def apply_effects(self, rune):
+        rune.shot_range += 0.5
+    
+    def remove_effects(self, rune):
+        rune.shot_range -= 0.5
+    

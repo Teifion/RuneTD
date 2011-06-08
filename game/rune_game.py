@@ -49,12 +49,16 @@ class RuneGame (engine.EngineV2):
             "Blue rune":    pygame.image.load('media/blue_rune.png'),
             "Yellow rune":  pygame.image.load('media/yellow_rune.png'),
             "Green rune":   pygame.image.load('media/green_rune.png'),
+            "Red rune":     pygame.image.load('media/red_rune.png'),
+            "Teal rune":    pygame.image.load('media/teal_rune.png'),
             
             # Bullets
             "Pink bullet":      pygame.image.load('media/pink_bullet.png'),
             "Blue bullet":      pygame.image.load('media/blue_bullet.png'),
             "Yellow bullet":    pygame.image.load('media/yellow_bullet.png'),
             "Green bullet":     pygame.image.load('media/green_bullet.png'),
+            "Red bullet":       pygame.image.load('media/red_bullet.png'),
+            "Teal bullet":      pygame.image.load('media/teal_bullet.png'),
         }
         
         self.rune_types = {
@@ -62,6 +66,8 @@ class RuneGame (engine.EngineV2):
             "Slow":     runes.SlowRune,
             "Splash":   runes.SplashRune,
             "Poison":   runes.PoisonRune,
+            "Critical": runes.CriticalRune,
+            "Weaken":   runes.WeakenRune,
         }
         
         self.enemy_types = {
@@ -127,28 +133,48 @@ class RuneGame (engine.EngineV2):
         self.basic_rune_button.button_up_kwargs = {"rune":"Basic"}
         self.add_button(self.basic_rune_button)
         self.basic_rune_text     = engine.Text_display((self.window_width - self.menu_width + 5, 50), "Basic rune", colour=(255,255,255))
-        self.basic_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 70), "Cost: 10, Effect: +1 damage", font_size=14, colour=(255,255,255))
+        self.basic_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 70),
+            "Cost: %d, Effect: +1 damage" % runes.BasicRune.cost, font_size=14, colour=(255,255,255))
         
-        self.slow_rune_button   = engine.Button((self.window_width - self.menu_width + 5, 90), self.resources['Blue rune'])
+        self.slow_rune_button   = engine.Button((self.window_width - self.menu_width + 5, 95), self.resources['Blue rune'])
         self.slow_rune_button.button_up = self.select_rune_type
         self.slow_rune_button.button_up_kwargs = {"rune":"Slow"}
         self.add_button(self.slow_rune_button)
-        self.slow_rune_text     = engine.Text_display((self.window_width - self.menu_width + 5, 125), "Slow rune", colour=(255,255,255))
-        self.slow_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 145), "Cost: 10, Effect: +1 range", font_size=14, colour=(255,255,255))
+        self.slow_rune_text     = engine.Text_display((self.window_width - self.menu_width + 5, 130), "Slow rune", colour=(255,255,255))
+        self.slow_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 150),
+            "Cost: %d, Effect: +1 range" % runes.SlowRune.cost, font_size=14, colour=(255,255,255))
         
-        self.splash_rune_button = engine.Button((self.window_width - self.menu_width + 5, 165), self.resources['Yellow rune'])
+        self.splash_rune_button = engine.Button((self.window_width - self.menu_width + 5, 175), self.resources['Yellow rune'])
         self.splash_rune_button.button_up = self.select_rune_type
         self.splash_rune_button.button_up_kwargs = {"rune":"Splash"}
         self.add_button(self.splash_rune_button)
-        self.splash_rune_text   = engine.Text_display((self.window_width - self.menu_width + 5, 200), "Splash rune", colour=(255,255,255))
-        self.splash_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 220), "Cost: 10, Effect: +10% rate of fire", font_size=14, colour=(255,255,255))
+        self.splash_rune_text   = engine.Text_display((self.window_width - self.menu_width + 5, 210), "Splash rune", colour=(255,255,255))
+        self.splash_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 230),
+            "Cost: %d, Effect: +10%% rate of fire" % runes.SplashRune.cost, font_size=14, colour=(255,255,255))
         
-        self.poison_rune_button  = engine.Button((self.window_width - self.menu_width + 5, 240), self.resources['Green rune'])
+        self.poison_rune_button  = engine.Button((self.window_width - self.menu_width + 5, 255), self.resources['Green rune'])
         self.poison_rune_button.button_up = self.select_rune_type
         self.poison_rune_button.button_up_kwargs = {"rune":"Poison"}
         self.add_button(self.poison_rune_button)
-        self.poison_rune_text    = engine.Text_display((self.window_width - self.menu_width + 5, 275), "Poison rune", colour=(255,255,255))
-        self.poison_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 295), "Cost: 10, Effect: -1 Damage, +30% rate of fire", font_size=14, colour=(255,255,255))
+        self.poison_rune_text    = engine.Text_display((self.window_width - self.menu_width + 5, 290), "Poison rune", colour=(255,255,255))
+        self.poison_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 310),
+            "Cost: %d, Effect: -1 Damage, +30%% rate of fire" % runes.PoisonRune.cost, font_size=14, colour=(255,255,255))
+        
+        self.critical_rune_button  = engine.Button((self.window_width - self.menu_width + 5, 335), self.resources['Red rune'])
+        self.critical_rune_button.button_up = self.select_rune_type
+        self.critical_rune_button.button_up_kwargs = {"rune":"Critical"}
+        self.add_button(self.critical_rune_button)
+        self.critical_rune_text    = engine.Text_display((self.window_width - self.menu_width + 5, 370), "Critical rune", colour=(255,255,255))
+        self.critical_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 390),
+            "Cost: %d, Effect: +2 Damage, -10%% rate of fire" % runes.CriticalRune.cost, font_size=14, colour=(255,255,255))
+        
+        self.weaken_rune_button  = engine.Button((self.window_width - self.menu_width + 5, 415), self.resources['Teal rune'])
+        self.weaken_rune_button.button_up = self.select_rune_type
+        self.weaken_rune_button.button_up_kwargs = {"rune":"Weaken"}
+        self.add_button(self.weaken_rune_button)
+        self.weaken_rune_text    = engine.Text_display((self.window_width - self.menu_width + 5, 450), "Weaken rune", colour=(255,255,255))
+        self.weaken_rune_info     = engine.Text_display((self.window_width - self.menu_width + 5, 470),
+            "Cost: %d, Effect: +0.5 range" % runes.WeakenRune.cost, font_size=14, colour=(255,255,255))
         
         # Rune info text
         self.rune_info_text = []
@@ -189,6 +215,14 @@ class RuneGame (engine.EngineV2):
         self.sprites.add(self.poison_rune_text)
         self.sprites.add(self.poison_rune_info)
         
+        self.sprites.add(self.critical_rune_button)
+        self.sprites.add(self.critical_rune_text)
+        self.sprites.add(self.critical_rune_info)
+        
+        self.sprites.add(self.weaken_rune_button)
+        self.sprites.add(self.weaken_rune_text)
+        self.sprites.add(self.weaken_rune_info)
+        
         # Information on the last x/y of the mouse
         self.last_mouse_pos = (-1, -1)
         
@@ -212,6 +246,10 @@ class RuneGame (engine.EngineV2):
             x, y = self.poison_rune_button.rect.left, self.poison_rune_button.rect.top
         elif rune == "Splash":
             x, y = self.splash_rune_button.rect.left, self.splash_rune_button.rect.top
+        elif rune == "Critical":
+            x, y = self.critical_rune_button.rect.left, self.critical_rune_button.rect.top
+        elif rune == "Weaken":
+            x, y = self.weaken_rune_button.rect.left, self.weaken_rune_button.rect.top
         
         self.rune_selector.rect.left = x-3
         self.rune_selector.rect.top = y-3

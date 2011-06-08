@@ -31,6 +31,7 @@ class Enemy (pygame.sprite.Sprite):
         self.slowed = 0
         self.poisoned = 0
         self.disabled = False
+        self.armour = 0
         
         # This has to be set by the sub_class
         self.hp = self.max_hp
@@ -70,6 +71,15 @@ class Enemy (pygame.sprite.Sprite):
         self.game.kills += 1
         self.game.kill_display.text = "%s kill%s" % (self.game.kills, "" if self.game.kills == 1 else "s")
         self.game.remove_enemy(self)
+    
+    def damage(self, amount):
+        if amount <= 0:
+            return
+        
+        self.hp -= max(amount - self.armour, 0)
+        
+        if self.hp <= 0:
+            self.kill()
 
 class Rune (pygame.sprite.Sprite):
     cost = 1
@@ -297,10 +307,7 @@ class Bullet (pygame.sprite.Sprite):
         self.apply_effects()
         
         if self.sprite_target != None:
-            self.sprite_target.hp -= self.damage
-            
-            if self.sprite_target.hp <= 0:
-                self.sprite_target.kill()
+            self.sprite_target.damage(self.damage)
         
         self.game.remove_shot(self)
     
