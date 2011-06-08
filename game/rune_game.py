@@ -420,9 +420,13 @@ class RuneGame (engine.EngineV2):
         # Load new level
         self.load_level()
     
-    def sell_all(self):
-        """docstring for sell_all"""
-        pass
+    def victory(self):
+        print("""
+########
+VICTORY!
+########
+""")
+        self.quit()
     
     def handle_mouseup(self, event):
         x, y = event.pos
@@ -483,10 +487,8 @@ class RuneGame (engine.EngineV2):
                 json_data = json.load(f)
                 self.level_data = json_data[str(self.level)]
             except KeyError as e:
-                print("Level '{0}' not found, level list: {1}".format(
-                    self.level, list(json_data.keys())
-                ))
-                raise
+                self.victory()
+                return
             except Exception as e:
                 raise
         
