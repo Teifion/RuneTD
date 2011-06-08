@@ -1,0 +1,17 @@
+The game starts automatically upon loading; after all enemies from a wave
+are killed the next wave will start 2 seconds later.
+
+Left clicking a black tile (wall) will place the selected rune on that spot
+Right clicking a rune will sell the rune at half price.
+
+You can select different runes from the sidebar on the right. Each rune has
+next to it it's name, cost and secondary effect.
+
+Each rune has a buff effect on all runes it's placed next to, this effect
+is removed when it's sold. Effects are applied only to runes already in
+existence when the new rune is placed, runes placed subsequently are not
+effected but also lose no effect if the first rune is removed.
+
+After each wave you are given a reward in gold in addition to the 1 gold
+given to build more runes with. After each level all runes are removed
+and the amount of gold given is set to the new amount (varies per level).
