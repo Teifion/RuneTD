@@ -336,7 +336,7 @@ class RuneGame (engine.EngineV2):
             if r.position == list(position):
                 the_rune = r
         
-        if not r:
+        if not the_rune:
             raise engine.Illegal_move("Cannot sell an empty tile")
         
         self.money += math.floor(the_rune.cost/2.0)

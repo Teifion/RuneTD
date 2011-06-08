@@ -150,6 +150,10 @@ class Rune (pygame.sprite.Sprite):
     
     def remove(self, *args, **kwargs):
         pygame.sprite.Sprite.remove(self, *args, **kwargs)
+        
+        for r in self.get_affected_runes():
+            self.remove_effects(r)
+            
     
     def get_affected_runes(self):
         """Returns a list of all runes adjacent and older"""
