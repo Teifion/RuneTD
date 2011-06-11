@@ -31,7 +31,6 @@ class Enemy (pygame.sprite.Sprite):
         self.slowed = 0
         self.poisoned = 0
         self.disabled = False
-        self.armour = 0
         
         # This has to be set by the sub_class
         self.hp = self.max_hp

@@ -3,6 +3,7 @@ from game import classes
 class RedTriangle (classes.Enemy):
     max_hp = 3
     reward = 1
+    armour = 0
     
     move_speed = 0.1
     
@@ -14,6 +15,7 @@ class RedTriangle (classes.Enemy):
 class BlueCircle (classes.Enemy):
     max_hp = 5
     reward = 1
+    armour = 1
     
     move_speed = 0.15
     
@@ -25,6 +27,7 @@ class BlueCircle (classes.Enemy):
 class PinkSquare (classes.Enemy):
     max_hp = 8
     reward = 1
+    armour = 2
     
     move_speed = 0.2
     
@@ -36,6 +39,7 @@ class PinkSquare (classes.Enemy):
 class OrangeOctagon (classes.Enemy):
     max_hp = 10
     reward = 1
+    armour = 4
     
     move_speed = 0.25
     
