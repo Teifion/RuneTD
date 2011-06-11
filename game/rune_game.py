@@ -378,6 +378,10 @@ class RuneGame (engine.EngineV2):
             pass
     
     def next_wave(self):
+        if self.wave >= 0:
+            self.money += self.level_data['reward']
+            self.money_display.text = "%d gold" % self.money
+        
         self.wave += 1
         
         # Feed the next wave into the queue
